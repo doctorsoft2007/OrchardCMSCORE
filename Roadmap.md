@@ -2,7 +2,7 @@
 
  * Multi-tenancy
  * Dependency Injection
- * Data Layer
-   * Entity Framework as the initial ORM (This may be swapped out later)
+ * [Configuration](https://github.com/OrchardCMS/Brochard/wiki/Configuration)
+ * [Data Layer Design](https://github.com/OrchardCMS/Brochard/wiki/Data-Layer-Design)
  * CoreCLR Compliant.
  * Setup
