@@ -1,4 +1,4 @@
-# Configuration Design
+## Configuration Design
 
 * Move all configuration files to use the new IConfiguration interface.
 * All configraiton files can be specified using the following order and extension
