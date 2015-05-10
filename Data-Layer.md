@@ -7,12 +7,12 @@ The data layer is to be re-factored to use a Map Reduce structure.
 Notes:
 
 ### Store(map, sort)
- -> setting says where individual content items are stored (for now everywhere)
- - store data as well in index
+-> setting says where individual content items are stored (for now everywhere)
+- store data as well in index
 
 ### Get(map, sort, reduce)
- -> search by map and sort then apply reduce
- -> if index not found, shell out to create index.
+-> search by map and sort then apply reduce
+-> if index not found, shell out to create index.
 
 Pass a lambda in, and reduce.
     
