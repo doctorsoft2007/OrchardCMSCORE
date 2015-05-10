@@ -12,7 +12,7 @@ Notes:
 
 ### Get(map, sort, reduce)
 -> search by map and sort then apply reduce
--> if index not found, shell out to create index.
+- if index not found, shell out to create index.
 
 Pass a lambda in, and reduce.
     
