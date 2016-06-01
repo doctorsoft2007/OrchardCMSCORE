@@ -1,3 +1,3 @@
-## Introductions to the B'Orchard' project
+## Introduction to the Orchard 2.0 project
 
-Brochard is the prototype 2.0 implementation of Orchard CMS.
+Orchard 2.0 is a re-implementation of [Orchard CMS](https://github.com/OrchardCMS/Orchard) on .NET Core. 
