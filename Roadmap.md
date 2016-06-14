@@ -23,6 +23,7 @@ Validate all the core components of Orchard work together to enable module devel
 - List module
 - Modules support
   - Dynamic compilation and loading
+- Deferred tasks
 
 #### Backlog
 - Recipes
@@ -31,7 +32,6 @@ Validate all the core components of Orchard work together to enable module devel
 - Admin theme
   - Guidelines
   - Tree navigation
-- Processing engine
 - Background tasks
 
 ## Alpha
