@@ -24,11 +24,11 @@ Validate all the core components of Orchard work together to enable module devel
 - Modules support
   - Dynamic compilation and loading
 - Deferred tasks
+- Resource manager
 
 #### Backlog
 - Recipes
 - Placement
-- Resource manager
 - Admin theme
   - Guidelines
   - Tree navigation
