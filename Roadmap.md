@@ -26,13 +26,13 @@ Validate all the core components of Orchard work together to enable module devel
 - Deferred tasks
 - Resource manager
 - Placement files
+- Background tasks
 
 #### Backlog
 - Recipes
 - Admin theme
   - Guidelines
   - Tree navigation
-- Background tasks
 
 ## Alpha
 
