@@ -27,9 +27,9 @@ Validate all the core components of Orchard work together to enable module devel
 - Resource manager
 - Placement files
 - Background tasks
+- Recipes
 
 #### Backlog
-- Recipes
 - Admin theme
   - Guidelines
   - Tree navigation
