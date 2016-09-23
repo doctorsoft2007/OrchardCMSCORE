@@ -74,18 +74,48 @@ To be a modular application, `Orchard.Web` doesn't specify, in its `project.json
 
 - **dotnet restore**: The `project.json` file is parsed to retrieve all dependencies, packages are updated, and, if needed, the `project.lock.json` file is written with updated dependencies metadata.
 
-##Project Model APIs
+##Project Model API
 
-Dotnet cli use these APIs which allow to e.g create a project context and retrieve all its dependencies (referenced project / package libraries). It is powerful because, when a library is marked as resolved, all the related compilation, runtime and native collections are populated with fully resolved assets (e.g by providing full paths). But to use the Project Model on a project, its `project.json` and `project.lock.json` files need to be there.
+Dotnet cli use tis API which allow to e.g create a project context and retrieve all its dependencies (referenced project / package libraries). It is powerful because, when a library is marked as resolved, all the related compilation, runtime and native collections are populated with fully resolved assets (e.g by providing full paths). But to use the Project Model on a project, its `project.json` and `project.lock.json` files need to be there.
 
-##Dependency Model APIs
+##Dependency Model API
 
-When a project is built to have an entry point and to preserve its compilation context, as needed by the main application to be executed and e.g to compile razor views, a bigger assembly is generated and also a `{project}.deps.json` file. Then we can use the Dependency Model APIs to retrieve dependencies infos through this deps json file. It is less powerful than the Project Model because assets are not fully resolved (e.g by providing only relative paths). It doesn't rely on the presence of the 2 project json files but it needs the related deps json file and a bigger assembly has been generated.
+When a project is built to have an entry point and to preserve its compilation context, as needed by the main application to be executed and e.g to compile razor views, a bigger assembly is generated and also a `{project}.deps.json` file. Then we can use the Dependency Model API to retrieve dependencies infos through this deps json file. It is less powerful than the Project Model because assets are not fully resolved (e.g by providing only relative paths). It doesn't rely on the presence of the 2 project json files but it needs the related deps json file and a bigger assembly has been generated.
 
+##Library contexts
+
+- **Resolved Project**: The 2 project json files are there.
+
+- **Resolved Package**: There is a package storage which contains this referenced package.
+
+- **Unresolved Project**: There is no project json files, e.g a core project not there in a published context.
+
+- **Unresolved Package**: There is no package storage (e.g in production) or it doesn't contains this package.
+
+- **Pre-compiled Project**: A Resolved Project with the 2 project json files but without any source files.
+
+- **Pre-compiled Module**: A Module project without project json files but with all necessary binaries (not implemented).
+
+-**Ambient Project**: The main project itself or a project belonging to the main project dependencies.
+
+-**Ambient Package**: A package belonging to the main project dependencies, including those of the targeted framework.
+
+-**Ambient Assembly**: An assembly related to an ambient project or an ambient package.
+
+##Probing Folders
+
+- **Modules binaries folders**:
+
+- **Dependencies folder**:
 
 ##Dynamic Compilation
+
+- **Roslyn csharp compiler**:
+
+- **As dotnet compile**:
+
+- **As dotnet build**: Use the Project Model to resolve all library dependencies, and recursively compile referenced projects if needed.
+
 ##Dynamic Loading
-##Probing Folders
-##Contexts
 
 
