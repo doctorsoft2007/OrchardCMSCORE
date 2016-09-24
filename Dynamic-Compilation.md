@@ -76,7 +76,7 @@ To be a modular application, `Orchard.Web` doesn't specify, in its `project.json
 
 ##Project Model API
 
-Dotnet cli use tis API which allow to e.g create a project context and retrieve all its dependencies (referenced project / package libraries). It is powerful because, when a library is marked as resolved, all the related compilation, runtime and native collections are populated with fully resolved assets (e.g by providing full paths). But to use the Project Model on a project, its `project.json` and `project.lock.json` files need to be there.
+Dotnet cli use this API which allow to e.g create a project context and retrieve all its dependencies (referenced project / package libraries). It is powerful because, when a library is marked as resolved, all the related compilation, runtime and native collections are populated with fully resolved assets (e.g by providing full paths). But to use the Project Model on a project, its `project.json` and `project.lock.json` files need to be there.
 
 ##Dependency Model API
 
@@ -96,26 +96,40 @@ When a project is built to have an entry point and to preserve its compilation c
 
 - **Pre-compiled Module**: A Module project without project json files but with all necessary binaries (not implemented).
 
--**Ambient Project**: The main project itself or a project belonging to the main project dependencies.
+-**Ambient Project**: The main project itself or a project belonging to the main project dependencies, so a core project (not all core projects are ambient).
 
 -**Ambient Package**: A package belonging to the main project dependencies, including those of the targeted framework.
 
 -**Ambient Assembly**: An assembly related to an ambient project or an ambient package.
+
+##Dynamic Compilation
+
+- **Roslyn compiler**: We use the Roslyn csharp compiler `csc.exe` by referencing the `Microsoft.Net.Compilers.netcore` package. Then, at runtime we copy it in an executable `csc.dll` and create automatically a `csc.runtimeconfig.json` runtime config file, as `dotnet core setup` do to generate its outputs. Then, as `dotnet compile` do, we can execute `csc.dll`.
+
+- **Compilation**: The implementation is mainly inspired of the `dotnet compile` source code which uses the Project Model API to resolve compilation options, output paths, source files, and all compilation assemblies of the project dependencies (other projects or packages libraries). Then, options and references are formatted and stored in the `dotnet-compile-csc.rsp` response file. Then, this response file is passed as an argument to the `csc.dll` compiler.
+
+- **Conditions**: Only a Resolved Project which is not an Ambient Project (see above) can be compiled. We also check if it is not already compiled during the same startup, then we check (only once per project) all compilation IO (see below) to see if it needs to be compiled. By doing this we begin to do a part of the `dotnet build` job. 
+
+- **Compilation IO**: Compilation inputs are the 2 project json files, source files, eventually resource input files, and all compilation assemblies (often the same as runtime ones) of the project dependencies. Compilation outputs are the generated project runtime assembly (and its .pdb file), and eventually a project resource output assembly. Notice that a compilation output can be a compilation input when referenced as a dependency in another project.
+
+- **Compilation IO checking**: We check the presence and the last write time of all resolved compilation IO files. A project need to be compiled if there is a missing IO or if an input is newer than the earliest output. But IO are not resolved in the same way, when an assembly path is resolved you can check if it exists, but a source file resolution is already based on its presence. So, we can't only rely on this, e.g when you move or remove a source file, or add an old one. That's why the previous compilation context is stored in the `dotnet-compile-csc.rsp` response file, so we can check if anything else has been changed.
+
+- **Dependencies**: Before compiling a project itself, if a dependency is a Resolved Project, the compilation is called on it, and so on. By recursively compiling projects through the dependency graph, we are doing a part of the `dotnet build` job.
+
+If a dependency is an Unresolved Package (not there), we have to resolve ourselves assembly paths by searching in the runtime directory or probing folders (see below). Here, we can still use other assembly collections which provide relative paths from which we extract assembly file names. Then, if a compile time assembly is also in the runtime assemblies collection, we only use its file name to search. Otherwise, we combine the `refs` sublfolder to the file name before searching in the runtime directory then fallback to probing folders.
+
+If a dependency is an Ambient and Resolved Project (so a core project), normally all the resolved paths of its compilation assemblies (normally only one), as they have been resolved by the Project Model (this core project output path), are added to the references list used by the compiler. But, because e.g VS may output binaries in another folder (e.g artifacts), we first check for a resolved path if the file exists, then fallback to the runtime directory (because it's an ambient project).
+
+If a dependency is a Resolved Project but not Ambient (so a module) or is a Resolved Package, all the resolved paths of its compilation assemblies, as they have been resolved by the Project Model, are added to the references list used by the compiler.
+
+- **Parallel compilation**: Extension loading is done in parallel, therefore Module projects are also compiled in parallel. We use a dictionary of lock objects based on project names, this to prevent simultaneous compilations of the same project. We also use simple locks to prevent simultaneous writting of the same file.
+
+##Dynamic Loading
 
 ##Probing Folders
 
 - **Modules binaries folders**:
 
 - **Dependencies folder**:
-
-##Dynamic Compilation
-
-- **Roslyn csharp compiler**:
-
-- **As dotnet compile**:
-
-- **As dotnet build**: Use the Project Model to resolve all library dependencies, and recursively compile referenced projects if needed.
-
-##Dynamic Loading
 
 
