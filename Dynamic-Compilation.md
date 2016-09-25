@@ -101,11 +101,11 @@ When a project is built to have an entry point and to preserve its compilation c
 
 - **Pre-compiled Module**: A Module project without project json files but with all necessary binaries (not yet implemented).
 
--**Ambient Project**: The main project itself or a project belonging to the main project dependencies, so a core project (not all core projects are ambient).
+- **Ambient Project**: The main project itself or a project belonging to the main project dependencies, so a core project (not all core projects are ambient).
 
--**Ambient Package**: A package belonging to the main project dependencies, so including those of the targeted framework.
+- **Ambient Package**: A package belonging to the main project dependencies, so including those of the targeted framework.
 
--**Ambient Assembly**: An assembly related to an ambient project or an ambient package.
+- **Ambient Assembly**: An assembly related to an ambient project or an ambient package.
 
 ##Dynamic compilation
 
@@ -143,6 +143,6 @@ When a project is built to have an entry point and to preserve its compilation c
 
 - **Shared dependencies folder**:
 
-- **Runtime directory**: We don't load resources assemblies in memory but we store them in the runtime directory to be found by the Resource Manager. This by using this relaive path `{locale}/{project}.resources.dll`, as `dotnet build` or `dotnet publish` do.
+- **Runtime directory**: We don't load resources assemblies in memory but we store them in the runtime directory to be found by the Resource Manager. This by using this relative path `{locale}/{project}.resources.dll`, as `dotnet build` or `dotnet publish` do.
 
 
