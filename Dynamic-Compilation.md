@@ -10,9 +10,11 @@ To be a modular application, `Orchard.Web` doesn't specify, in its `project.json
 
 ###Library assemblies
 
-- **Compilation assemblies**: Referenced for all dependencies when compiling. Most of the time a project / package library has only one compilation assembly which is the same as the runtime assembly.
+- **Compilation assemblies**: Used to referenced all project dependencies when compiling.
 
-- **Default runtime assemblies**: Used for implementation at runtime, need to be loaded for all dependencies. Most of the time a project / package library has only one runtime assembly which is the same as the compilation assembly.
+- **Default runtime assemblies**: Used for implementation at runtime, need to be loaded for all dependencies.
+
+- **Compile only assemblies**: Most of the time a project / package library has one compilation assembly which is also used as the default runtime assembly. If not, it's a compile only assembly.
 
 - **Specific runtime assemblies**: Some libraries provides Different implementations for different runtime environments.
 
@@ -97,7 +99,7 @@ When a project is built to have an entry point and to preserve its compilation c
 
 - **Unresolved Package**: There is no package storage (e.g in production) or it doesn't contains this package.
 
-- **Pre-compiled Project**: A Resolved Project with the 2 project json files but without any source files.
+- **Pre-compiled Project**: A Resolved Project with the 2 project json files and its precompiled binaries but without any source files.
 
 - **Pre-compiled Module**: A Module project without project json files but with all necessary binaries (not yet implemented).
 
@@ -113,23 +115,31 @@ When a project is built to have an entry point and to preserve its compilation c
 
 - **Compilation**: The implementation is mainly inspired of the `dotnet compile` source code which uses the Project Model API to resolve compilation options, output paths, source files, and all compilation assemblies of the project dependencies (other projects or packages libraries). Then, options and references are formatted and stored in the `dotnet-compile-csc.rsp` response file. Then, this response file is passed as an argument to the `csc.dll` compiler.
 
-- **Conditions**: Only Resolved Projects (see above) which are not Ambient Projects (so all modules and some core projects) can be compiled. We also check if a project is not already compiled on the same startup, then we check (only once per project) all compilation IO (see below) to see if it needs to be compiled. By doing this we do a part of the `dotnet build` job.
+- **Configuration**: We need to pass to the Project Model API the curent configuration `Debug` or `Release`. Here we use the configuration under which the main project has been built. To do this, we use the Dependency Model API on the main project (we don't rely on its project.json file) to grab its compilation options and then retrieve the configuration.
+
+- **Conditions**: Only Resolved Projects (see above) which are not Ambient Projects can be compiled (so all modules and some core projects). We also check if a project is not already compiled on the same startup, then we check (only once per project) all compilation IO (see below) to see if it needs to be compiled. By doing this we do a part of the `dotnet build` job.
 
 - **Compilation IO**: Compilation inputs are the 2 project json files, source files, eventually resource input files, and all compilation assemblies (often the same as runtime ones) of the project dependencies. Compilation outputs are the generated project assembly (and its .pdb file), and eventually a resource output assemblies. Notice that a project compilation output can be a compilation input when referenced as a dependency in another project.
 
 - **Compilation IO checking**: We check the presence and the last write time of all resolved compilation IO files. A project need to be compiled if there is a missing IO or if an input is newer than the earliest output. But IO are not resolved in the same way, a source file resolution is already based on its presence. So, we can't only rely on this, e.g when a source file is moved or removed, or an old one is added. That's why the previous compilation context is stored in the `dotnet-compile-csc.rsp` response file, so we can check if anything else has been changed.
 
-- **Dependencies**: Before compiling a project itself we parse all its dependencies. If a dependency is a non Ambient and Resolved Project (so a module), the compilation is called on it, and so on. By recursively compiling projects through the dependency graph, we are doing a part of the `dotnet build` job. Then we resolve all compilation references from each dependency.
+- **Dependencies**: Before compiling a project itself we parse all its dependencies. If a dependency is a non Ambient and Resolved Project, the compilation is called on it, and so on. By recursively compiling projects through the dependency graph, we are doing a part of the `dotnet build` job. Then we resolve all compilation references from each dependency.
 
-    If a dependency is an Unresolved Project ...
+    Note: Because a dynamic compilation is first called on a Module project, here a non Ambient core Project can only be compiled as a dependency.
 
-    If a dependency is an Unresolved Package (not there), we have to resolve ourselves assembly paths from the runtime directory where ambient assemblies are, then fallback to the probing folders (see below) where they may have been stored. An Unresolved Package still provides other collections with expected assemblies but with only nuget relative paths. Here, because we search in other known folders, we first need to extract assembly file names. Then, if a compile time assembly is not also a default runtime assembly, we combine the `refs` sublfolder to the file name before resolving it. When all assembly paths have been resolved, we add them to the compilation references.
+    Note: For each dependency which is a Project or a Package library, we don't need to parse their own dependencies. They already belong to those of the project being compiled and whose all the dependency graph has been resolved. So, most of the time, when referencing a dependency, its compilation and runtime collections have only one and the same assembly. This is always true for a Project (not a Package) which never have a compile only assembly. So, here we will not always use the terms of compilation, runtime and collections.
 
-    If a dependency is a Precompiled Project ...
+    If a dependency is an Unresolved Project, we have to resolve ourselves the assembly path by searching in probing folders where the assembly may have been stored (see Dynamic storing). First from the runtime directory where ambient assemblies are, then fallback to the project (being compiled) bin folder, then to the shared probing folder. Here, we search at the top level of these folders, so we only need the file name which is the same as the library identity name, this to resolve the assembly path and add it to the compilation references.
 
-    If a dependency is an Ambient and Resolved Project, normally all the resolved paths of its compilation assemblies, as they have been resolved by the Project Model, are added to the compilation references. But, because e.g VS may output binaries in another folder (e.g artifacts), we first check for each resolved path if the file exists, if not we fallback to the runtime directory (because here it's an ambient assembly).
+    If a dependency is an Unresolved Package (not there), we have to resolve ourselves the assembly path by searching in probing folders. First from the runtime directory, then fallback to the project (being compiled) bin folder, then to the shared probing folder. An Unresolved Package, from other collections, still provides relative paths from which we can still extract the assembly name. Then, if the compile time assembly is not also used as the default runtime one (so compile only), we also combine the `refs` sublfolder to the file name, this to resolve the assembly path and add it to the compilation references.
 
-    If a dependency is a non Ambient and Resolved Project or is a Resolved Package, all the resolved paths of its compilation assemblies, as they have been resolved by the Project Model, are added to the compilation references.
+    If a dependency is a Precompiled Project, so with no source files but still the project json files and its binaries. In this case the compilation assemblies collection is empty, we have to resolve ourselves the assembly path by searching in probing folders. But here, we first search in this precompiled project bin folder where the assembly is intended to be, then we fallback to the project (being compiled) bin folder, then to the shared probing folder. Here also, we search at the top level of these folders and the file name is the same as the library identity name, so we can resolve the assembly path and add it to the compilation references.
+
+    If a dependency is a Precompiled Module (not yet implemented), so with all needed binaries but without project json files. Here, the module bin folder is not related to this pattern `{project}/bin/{config}/{framework}`, all binaries are intended to be directly in the `{project}/bin` folder. So here we will have to do a mix between a Precompiled Project and an Unresolved Project, and we will also have to resolve ourselves the full path of this precompiled module bin folder (its pseudo project output path).
+
+    If a dependency is an Ambient and Resolved Project, the assembly path resolved by the Project Model could be added as it is to the compilation references. But, because e.g VS may output binaries in another folder (e.g artifacts), we first check if the assembly file exists, if not we fallback to the runtime directory (because here it's an ambient assembly).
+
+    If a dependency is a non Ambient and Resolved Project or is a Resolved Package, all the paths of its compilation assemblies, as resolved by the Project Model, are added to the compilation references.
 
 - **Parallel compilation**: Extensions loading is done in parallel, therefore Module projects are also compiled in parallel. We use a dictionary of lock objects based on project names, this to prevent simultaneous compilations of the same project. We also use simple locks to prevent simultaneous writting of the same file.
 
@@ -137,12 +147,14 @@ When a project is built to have an entry point and to preserve its compilation c
 
 ##Dynamic storing
 
-- **Structured probing folders**:
+- **Modules binaries folders**: When dynamically compiling a Module, its assembly is naturally outputed in its binary folder `{project}/bin/{config}/{framework}/{project}.dll`. After loading a module, we also store here all non ambient assemblies (not part of the main project). Can be related to a package or a core project only used by the module, a dependency on another module ... All assets which are compile only assemblies or specific runtime assemblies are stored in a structured way, as `dotnet publish` do (see below).
 
-- **Modules binaries folders**:
+- **Shared dependencies folder**: `App_Data/dependencies`
 
-- **Shared dependencies folder**:
+- **Structured probing folders**: In a probing folder, as it is done in a runtime directory when publishing, default runtime assemblies are stored at the top, compile only assemblies in a `refs` subfolder, resources assemblies in their related `{locale}` subfolder, and specific runtime assemblies in a `runtimes` subfolder. In the `runtimes` subfolder we use the same pattern `runtimes/{rid}/lib/{tfm}/{assembly}.dll` as dotnet publish uses.
 
-- **Runtime directory**: We don't load resources assemblies in memory but we store them in the runtime directory to be found by the Resource Manager. This by using this relative path `{locale}/{project}.resources.dll`, as `dotnet build` or `dotnet publish` do.
+    The nuget package storage uses the same kind of patterns but not exactly the same, e.g compile only assemblies differ based on the targeted framework but not based on the runtime environment. So, here they are all stored in the `refs` subfolder in a flattened way.
+
+- **Runtime directory**: We don't load resources assemblies in memory but we also store them in the runtime directory to be found by the Resource Manager. This by using this relative path `{locale}/{project}.resources.dll`, as `dotnet build` or `dotnet publish` do.
 
 
