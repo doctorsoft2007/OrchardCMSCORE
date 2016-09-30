@@ -159,19 +159,18 @@ When a project is built to have an entry point and to preserve its compilation c
 
 ##Dynamic storing
 
-- **Probing folders**: Where binaries are stored ...
+- **Probing folders**: Specific folders where binaries are stored and can be retrieved at runtime for loading and or compilation.
 
-- **Structured probing folders**: In a probing folder, as it is done in a runtime directory when publishing, default runtime assemblies are stored at the top, compile only assemblies in a `refs` subfolder, resources assemblies in their related `{locale}` subfolder, and specific runtime assemblies in a `runtimes` subfolder by using a relative path with this pattern `runtimes/{rid}/lib/{tfm}/{assembly}.dll` as dotnet publish uses.
+- **Structured probing folders**: In each probing folder, as it is done in the runtime directory by `dotnet publish`, default runtime assemblies are stored at the top level, compile only assemblies in a `refs` subfolder, resources assemblies in their related `{locale}` subfolders, and specific runtime assemblies by using this relative path pattern `runtimes/{rid}/lib/{tfm}/{assembly}.dll`.
 
-- **Modules binaries folders**: When dynamically compiling a Module, its assembly is naturally outputed in its binary folder `{project}/bin/{config}/{framework}/{project}.dll`. After loading a module, we also store here all non ambient assemblies (not part of the main project). Can be related to a package or a core project only used by the module, a dependency on another module ... All assets which are compile only assemblies or specific runtime assemblies are stored in a structured way, as `dotnet publish` do (see below).
+    The nuget package storage uses the same kind of patterns but not exactly the same, e.g compile only assemblies differ based on the targeted framework but not on the runtime environment. So, here they are all stored in the `refs` subfolder and in a flattened way, as `dotnet publish` do.
 
-- **Shared dependencies folder**: `App_Data/dependencies`
+- **Module binary folder**: When compiling a Module at runtime, its assembly is naturally outputed in its binary folder `{project}/bin/{config}/{framework}/{project}.dll`. While loading a module, we also store all non ambient assemblies (not part of the main project). Can be related to a package or a core project only used by modules, or a dependency on another module ... All assets which are compile only assemblies or specific runtime assemblies are stored in a structured way (see Structured probing folders). For a **Precompiled Module**, all binaries are intended to be already stored in its bin folder directly.
 
-    The nuget package storage uses the same kind of patterns but not exactly the same, e.g compile only assemblies differ based on the targeted framework but not based on the runtime environment. So, here they are all stored in the `refs` subfolder in a flattened way.
+- **Shared dependencies folder**: Idem as above but in the `App_Data/dependencies` location shared by all modules.
 
-- **Runtime directory**: We don't load resources assemblies in memory but we also store them in the runtime directory to be found by the Resource Manager. This by using this relative path `{locale}/{project}.resources.dll`, as `dotnet build` or `dotnet publish` do.
+- **Runtime directory**: The runtime directory contains ambient assemblies which can be referenced at runtime e.g for compilation. But here, we only use this directory to store non ambient **Resource Assemblies** that need to be there to be found at runtime by the Resource Manager.
 
-- There is no need to load **Compile only Assemblies**, but the non ambient ones need to be stored in probing folders, this to retrieve them, in some contexts (e.g no package storage), when compiling.
+- **Storing**: So, for each non ambient dependencies assemblies of a Module, after loading it we store it in each of the probing folders (the Module binary and the shared probing folders). But each time, we first check if the assembly is not already there or has an older date.
 
-- There is no need to load **Resource Assemblies**, but the non ambient ones need to be stored in probing folders. Here, particularly in the runtime directory to be retrieved at runtime by the Resource Manager.
-
+    So, because an assembly is first resolved for loading from its regular location (a Resolved Project / Package) or with the most recent one found in probing folders, then after, when storing we also update each probing folder with the last resolved assembly or with a more recent one found in another probing folder. This means e.g that an assembly in a module bin folder (e.g a Precompiled Module) can be updated, through the shared probing folder, with a more recent one coming from another module.
