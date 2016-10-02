@@ -1,8 +1,22 @@
-##The needs (in construction)
+##Summary
+
+- [The needs](#the-needs)
+- [Library assemblies](#library-assemblies)
+- [Dotnet commands](#dotnet-commands)
+- [Project model API](#project-model-API)
+- [Dependency model API](#dependency-model-API)
+- [Library contexts](#library-contexts)
+- [Dynamic compilation](#dynamic-compilation)
+- [Dynamic loading](#dynamic-loading)
+- [Dynamic storing](#dynamic-storing)
+- [Concerns](#concerns)
+- [Todo](#todo)
+
+##The needs
 
 To be a modular application, `Orchard.Web` doesn't specify, in its `project.json` file, any dependencies on Modules and Themes which are individual portable library projects. So, when you build `Orchard.Web`, Modules are not compiled. You can manually build them (e.g from VS tools) but when you launch `Orchard.Web`, we still need to load their assemblies.
 
-- **Dynamic loading** is therefore necessary, we need to load assemblies of all modules dependencies at runtime. By doing this we can also pass to the razor view engine all needed metadata references for views compilation (not described here). We also need to store specific assemblies in some probing folders, this to retrieve them in different contexts.
+- **Dynamic loading** is therefore necessary, we need to load non ambient assemblies of all modules dependencies at runtime. By doing this we can also pass to the razor view engine all needed metadata references for views compilation (not described here). We also need to store these assemblies in some probing folders, this to retrieve them in different contexts.
 
 - **Dynamic compilation** is useful in a development context, you can update a module source file, a package or a core project and just hit F5, all dependent modules will be dynamically re-compiled. When a module has a dependency on a core project which is not part of `Orchard.Web`, if needed this non ambient core project is also re-compiled at runtime.
 
@@ -14,13 +28,13 @@ To be a modular application, `Orchard.Web` doesn't specify, in its `project.json
 
 - **Default runtime assemblies**: Used for implementation at runtime, need to be loaded for all dependencies.
 
-- **Compile only assemblies**: Most of the time a library has only one compilation assembly which is the same as the default runtime assembly. If not it's a compile only assembly because another assembly is used at runtime (see below).
+- **Compile only assemblies**: Most of the time a library has only one compilation assembly which is the same as the default runtime one. If not it's a compile only assembly because another one is used at runtime (see below).
 
 - **Specific runtime assemblies**: Some libraries provides different implementations for different runtime environments.
 
 - **Native assemblies**: Some libraries need to provide native implementations for different runtimes environments. Because Modules are not intended to be published themselves, we don't care about native outputs.
 
-- **Resource assemblies**: Embedded resources in `{project}.resources.dll` files used by the resource manager.
+- **Resources assemblies**: Embedded resources in `{project}.resources.dll` files used by the resource manager.
 
 ##Dotnet commands
 
@@ -123,7 +137,7 @@ When a project is built to have an entry point and to preserve its compilation c
 
 - **Compilation IO checking**: We check the presence and the last write time of all resolved compilation IO files. A project need to be compiled if there is a missing IO or if an input is newer than the earliest output. But IO are not resolved in the same way, a source file resolution is already based on its presence. So, we can't only rely on this, e.g when a source file is moved, removed, or an old one is added. That's why, to see if anything else has changed, we use the previous compilation context stored in the `dotnet-compile-csc.rsp` response file.
 
-- **Building**: Before compiling a project itself we parse all its dependencies. If a dependency is a non ambient and resolved project (here can be a core project), we recursively call Dynamic Compilation on it, and so on through the dependency graph, as `dotnet build` do.
+- **Building**: Before compiling a project itself we parse all its dependencies. If a dependency is a non ambient and resolved project (here can be a core project), we recursively call dynamic compilation on it, and so on through the dependency graph, as `dotnet build` do.
 
     Then we resolve all compilation assembly paths from each dependency and add them to the references list needed for compilation. So, here we can do a complete compilation IO checking and, if needed, the project is compiled. If compilation succeeds and if there are resources input files, resources assemblies are also generated.
 
@@ -131,7 +145,7 @@ When a project is built to have an entry point and to preserve its compilation c
 
     If a dependency is an **unresolved project**, we have to resolve ourselves the assembly path by searching in probing folders where the assembly may have been stored. First from the runtime directory where ambient assemblies are, then fallback to the project (being compiled) binary folder and the shared probing folder where we try to resolve the most recent assembly file. Here, we only need the file name which is the same as the library identity name.
 
-    If a dependency is a **precompiled module**, because it has no project files, it is also checked as an unresolved project, so we first do the above. Then, if we can't resolve the assembly path, we fallback to the bin folder of this (possible) precompiled module. Here we use the project path of the dependency itself, and, in place of using the regular output path `bin/{config}/{framework}/{project}.dll`, we search directly in the bin folder `bin/{project}.dll`.
+    If a dependency is a **precompiled module**, because it has no project files, it is also checked as an unresolved project, so we first do the above. Then, if we can't resolve the assembly path, we fallback to the bin folder of this (possible) precompiled module. Here we use the project path of the dependency itself, and, in place of using the regular output path, we search directly in the bin folder directly.
 
     If a dependency is an **unresolved package**, we have to resolve ourselves the assembly path as above from the same probing folders. From other collections, an unresolved package still provides relative paths from which we can extract the assembly name. Then, if the compile time assembly is a compile only assembly, we also combine the `refs` sublfolder to the file name.
 
@@ -151,29 +165,47 @@ When a project is built to have an entry point and to preserve its compilation c
 
 - **Dependencies**: If a module is a **resolved project**, assemblies paths of all its dependencies are resolved in the same way as when compiling. But here, we use runtime assemblies collections and, if a dependency is not resolved, we never fallback to the runtime directory because it only contains ambient assemblies.
 
-    If a package provide different **specific runtime assemblies**, each one provides a non empty rid (runtime identifier). Then we look up for the first rid compatible to the current runtime environment, and use it to resolve the right runtime assembly path. This by using a relative path with this pattern `runtimes/{rid}/lib/{tfm}/{assembly}.dll`.
+    If a package provide different **specific runtime assemblies**, each one provides a non empty rid (runtime identifier). Then we look up for the first rid compatible to the current runtime environment, and use it to resolve the right runtime assembly path.
 
-    If a module is a **precompiled module** without project json files, we can't use the project model API to resolve its dependencies. But all needed assemblies are intended to be in the module bin folder directly, and in the same structured way we are using to store assemblies. So here, we simply parse the module bin folder where default runtime assemblies are intended to be at the top level, specific runtime ones under the `runtimes` subfolder, and compile only ones in the `refs` subfolder.
+    If a module is a **precompiled module** without project json files, we can't use the project model API to resolve its dependencies. But all needed assemblies are intended to be in the module bin folder directly, and through the same structure which is used to store assemblies. So here, we simply parse the module bin folder where default runtime assemblies are intended to be at the top level, specific runtime ones under the `runtimes` subfolder, and compile only ones in the `refs` subfolder.
 
 ##Dynamic storing
 
-- **Probing folders**: Specific folders where binaries are stored and then can be retrieved in different contexts.
+- **Probing folders**: Specific folders where binaries are stored and therefore can be retrieved in different contexts.
 
-- **Structured probing folders**: In each probing folder, as it is done in the runtime directory by `dotnet publish`, default runtime assemblies are stored at the top level, compile only assemblies in a `refs` subfolder, resources assemblies in their related `{locale}` subfolders, and specific runtime assemblies by using this pattern `runtimes/{rid}/lib/{tfm}/{assembly}.dll`.
+- **Structured probing folders**: In each probing folder we store assemblies in a structured way, as [dotnet publish](#dotnet-commands) outputs its binaries in the runtime directory, default runtime assemblies are stored at the top level, compile only assemblies in a `refs` subfolder, resources assemblies in their related `{locale}` subfolders, and specific runtime assemblies by using this pattern.
+
+        runtimes/{rid}/lib/{tfm}/{assembly}.dll
 
     The nuget package storage uses the same kind of patterns but not exactly, e.g compile only assemblies differ based on the targeted framework but not on the runtime environment. So, here they are all flattened in the `refs` subfolder.
 
-- **Module binary folder**: When compiling a module at runtime, its assembly is naturally outputed in its binary folder `{project}/bin/{config}/{framework}/{project}.dll`. While loading a module, we also store here all non ambient assemblies of all its dependencies. For a **precompiled module**, all binaries are intended to be already stored in its bin folder directly and in the same structured way.
+- **Module binary folder**: When compiling a module at runtime, its assembly is naturally outputed in its binary folder.
+
+        {project}/bin/{config}/{framework}/{project}.dll
+
+    While loading a module, we also store here all non ambient assemblies of all its dependencies.
+
+        {project}/bin/{config}/{framework}/{a-default-runtime}.dll
+        {project}/bin/{config}/{framework}/refs/{a-compile-only}.dll
+        {project}/bin/{config}/{framework}/{locale}/{a}.resources.dll
+        {project}/bin/{config}/{framework}/runtimes/{rid}/lib/{tfm}/{a-specific-runtime}.dll
+
+    For a **precompiled module**, all binaries are already stored in its bin folder directly.
+
+        {module}/bin/{a-default-runtime}.dll
+        {module}/bin/refs/{a-compile-only}.dll
+        {module}/bin/{locale}/{a}.resources.dll
+        {module}/bin/runtimes/{rid}/lib/{tfm}/{a-specific-runtime}.dll
 
 - **Shared dependencies folder**: Idem as above but in the `App_Data/dependencies` location and shared by all modules.
 
-- **Runtime directory**: Here, we only use the runtime directory to store non ambient **resource assemblies**, this to be found by the resource manager.
+- **Runtime directory**: Here, we only store non ambient resources assemblies, this to be found by the resource manager.
 
-- **Resolving**: Before loading a non ambient assembly of a module dependency, we first try to resolve it from its regular location (e.g in the package storage), then we fallback to the probing folders, the module binary folder and the shared probing folder, from where we try to find the most recent one.
+- **Resolving**: Before loading a non ambient assembly of a module dependency, we first try to resolve it from its regular location (e.g the package storage), then we fallback to the probing folders (module binary and shared probing folders) from where we try to find the most recent one.
 
-- **Storing**: So, each non ambient assembly, of all dependencies of a given module, is first resolved and loaded, then, without knowing from which location it has been resolved, the assembly is stored in probing folders, the module binary folder and the shared probing folder. In each probing folder, we first check that the assembly is not already there or has an older date.
+- **Storing**: So, each non ambient assembly, of all dependencies of a given module, is first resolved and loaded, then, without knowing from which location it has been resolved, the assembly is stored in probing folders (module binary and shared probing folders) where we first check that the assembly is not already there or has an older date.
 
-- **Updating**: The result of the above implementation is that we also update each probing folder with the last resolved assembly or with a more recent one found in another probing folder. This means e.g that an assembly in a module bin folder (even a precompiled module) can be updated, through the shared probing folder, with a more recent one coming from another module.
+- **Updating**: The result of the above implementation is that we also update each probing folder with the last fully resolved assembly or with a more recent one found in another probing folder. This means e.g that an assembly in a module binary folder may be updated, through the shared probing folder, with a more recent one coming from another module.
 
 ##Concerns
 
