@@ -16,11 +16,11 @@
 
 To be a modular application, `Orchard.Web` doesn't specify, in its `project.json` file, any dependencies on Modules and Themes which are individual portable library projects. So, when you build `Orchard.Web`, Modules are not compiled. You can manually build them (e.g from VS tools) but when you launch `Orchard.Web`, we still need to load their assemblies.
 
-- **Dynamic loading** is therefore necessary, we need to load non ambient assemblies of all modules dependencies at runtime. By doing this we can also pass to the razor view engine all needed metadata references for views compilation (not described here). We also need to store these assemblies in some probing folders, this to retrieve them in different contexts.
+- [**Dynamic loading**](#dynamic-loading) is therefore necessary, we need to load non ambient assemblies of all modules dependencies at runtime. By doing this we can also pass to the razor view engine all needed metadata references for views compilation (not described here). We also need to [store at runtime](#dynamic-storing) these assemblies in some probing folders, this to retrieve them in different contexts.
 
-- **Dynamic compilation** is useful in a development context, you can update a module source file, a package or a core project and just hit F5, all dependent modules will be dynamically re-compiled. When a module has a dependency on a core project which is not part of `Orchard.Web`, if needed this non ambient core project is also re-compiled at runtime.
+- [**Dynamic compilation**](#dynamic-compilation) is useful in a development context, you can update a module source file, a package or a core project and just hit F5, all dependent modules will be dynamically re-compiled. When a module has a dependency on a core project which is not part of `Orchard.Web`, if needed this non ambient core project is also re-compiled at runtime.
 
-- **In production**, most of the time it will be better to use pre-compiled modules, but maybe useful sometimes to only have to publish a source file and let things go. Dynamic compilation and loading has already been tested in some environments where core projects are not there and / or there is no packages storage.
+- In a published context, most of the time it will be better to use pre-compiled modules, but maybe useful in some scenarios to only have to push e.g an updated source file. Dynamic compilation has been tested in different contexts where core projects are not there and / or there is no packages storage.
 
 ###Library assemblies
 
@@ -42,7 +42,7 @@ A project is a library which have dependencies on other libraries which are othe
 
 ##Dotnet commands
 
-Here we describe how dotnet commands output binaries, this because we use the same structure to [**store at runtime**](#dynamic-storing) all non ambient modules assemblies in probing folders, and then to retrieve them in different contexts for compilation and loading.
+Here we describe how dotnet commands output binaries, this because we use the same structure to [**store at runtime**](#dynamic-storing) all [non ambient assemblies](#library-assemblies) of modules in probing folders, and then to retrieve them in different contexts for compilation and loading.
 
 - **dotnet compile** (used by dotnet build): The project assembly (and its .pdb file) is outputed.
 
@@ -61,40 +61,40 @@ Here we describe how dotnet commands output binaries, this because we use the sa
         // {project}/bin/{config}/{framework}/{project}.deps.json
         Orchard.Web/bin/Debug/netcoreapp1.0/Orchard.Web.deps.json
 
-    Runtime assemblies of all referenced projects are also outputed.
+    [Runtime assemblies](#library-assemblies) of all referenced projects are also outputed.
 
         // {project}/bin/{config}/{framework}/{assembly}.dll
         Orchard.Web/bin/Debug/netcoreapp1.0/Orchard.Data.dll
 
-    Runtime assemblies of referenced packages are not outputed.
+    [Runtime assemblies](#library-assemblies) of referenced packages are not outputed.
 
-    Resources assemblies are ouputed.
+    [Resources assemblies](#library-assemblies) are ouputed.
 
         // {project}/bin/{config}/{framework}/{locale}/{project}.resources.dll
         Orchard.Web/bin/Debug/netcoreapp1.0/fr/Orchard.Web.resources.dll
 
 - **dotnet publish**: All above assemblies are outputed at the root of the published target, plus the following.
 
-    Default runtime assemblies of referenced packages which are not part of the targeted framework (see in `dotnet/shared/Microsoft.NETCore.App/{version}`) are also outputed.
+    [Default runtime assemblies](#library-assemblies) of referenced packages which are not part of the targeted framework (see in `dotnet/shared/Microsoft.NETCore.App/{version}`) are also outputed.
 
         root/System.Data.Common.dll
         root/Microsoft.Extensions.DependencyModel.dll
 
-    Specific runtime assemblies of referenced packages which are not part of the targeted framework are also outputed.
+    [Specific runtime assemblies](#library-assemblies) of referenced packages which are not part of the targeted framework are also outputed.
 
         // runtimes/{rid}/lib/{tfm}/{assembly}.dll
         root/runtimes/unix/lib/netstandard1.3/System.IO.Pipes.dll
 
-    Compile only assemblies are outputed.
+    [Compile only assemblies](#library-assemblies) are outputed.
 
         root/refs/System.IO.dll
 
-    Native assemblies for different targeted runtimes are ouputed.
+    [Native assemblies](#library-assemblies) for different targeted runtimes are ouputed.
 
         // runtimes/{rid}/native{assembly}.{lib-suffix}
         root/runtimes/osx/native/lmdb.dylib
 
-    As with dotnet build, resources assemblies are ouputed.
+    As with dotnet build, [resources assemblies](#library-assemblies) are ouputed.
 
         // {locale}/{project}.resources.dll
         root/fr/Orchard.Web.resources.dll
@@ -161,7 +161,7 @@ We use the [**project model API**](#project-model-api) to resolve a module and i
 
 ##Dynamic loading
 
-- **Loading**: If a module is not already loaded, we parse all its dependencies and use the default `AssemblyLoadContext` to load in memory all the related [runtime assemblies](#library-assemblies) which are not ambient. We don't check for each individual assembly if it is already loaded, seems to be done internally, but here trying to load an ambient assembly would fail.
+- **Loading**: If a module is not already loaded, we parse all its dependencies and use the default `AssemblyLoadContext` to load in memory all the related [runtime assemblies](#library-assemblies) which are not ambient. We don't check for each individual assembly if it is already loaded this way, seems to be done internally, but here trying to load an [ambient assembly](#library-assemblies) would fail.
 
 - **Dependencies**: If a module is a [**resolved project**](#library-contexts), assemblies paths of all its dependencies are resolved in the same way as when compiling. But here, we use [runtime assemblies](#library-assemblies) collections and, if a dependency is not resolved, we never fallback to the runtime directory because it only contains ambient assemblies.
 
@@ -175,7 +175,7 @@ We use the [**project model API**](#project-model-api) to resolve a module and i
 
 - **Structured probing folders**: In each probing folder we store assemblies in a structured way, as [**dotnet publish**](#dotnet-commands) outputs its binaries in the runtime directory, [default runtime assemblies](#library-assemblies) are stored at the top level, [compile only assemblies](#library-assemblies) in the `refs` subfolder, [resources assemblies](#library-assemblies) in their related `{locale}` subfolders, and specific [runtime assemblies](#library-assemblies) under the `runtimes` subfolder.
 
-    The nuget package storage uses the same kind of patterns but not exactly, e.g compile only assemblies differ based on the targeted framework but not on the runtime environment. So, here they are all flattened in the `refs` subfolder.
+    The nuget package storage uses the same kind of patterns but not exactly, e.g [compile only assemblies](#library-assemblies) differ based on the targeted framework but not on the runtime environment. So, here they are all flattened in the `refs` subfolder.
 
 - **Module binary folder**: When compiling a module project at runtime, its main assembly is naturally outputed in its binary folder. While loading it, we also store here all [**non ambient assemblies**](#library-assemblies) of all its dependencies.
 
