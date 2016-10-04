@@ -20,29 +20,29 @@ To be a modular application, `Orchard.Web` doesn't specify, in its `project.json
 
 - [**Dynamic compilation**](#dynamic-compilation) is useful in a development context, you can update a module source file, a package or a core project and just hit F5, all dependent modules will be dynamically re-compiled. When a module has a dependency on a core project which is not part of `Orchard.Web`, if needed this non ambient core project is also re-compiled at runtime.
 
-- In a published context, most of the time it will be better to use pre-compiled modules, but maybe useful in some scenarios to only have to push e.g an updated source file. Dynamic compilation has been tested in different contexts where core projects are not there and / or there is no packages storage.
+- In a published context, most of the time it will be better to use pre-compiled modules, but maybe useful in some scenarios to only have to push e.g an updated source file. Dynamic compilation and loading have been tested in different contexts where core projects are not there and / or there is no packages storage.
 
 ###Library assemblies
 
-A project is a library which have dependencies on other libraries which are other projects and / or packages. When resolved through one of the [**dotnet model API**](#project-model-api), each library provide different collections related to different kind of assemblies.
+A module project is a library which have dependencies on other libraries which are other projects and / or packages. When resolved through one of the [**dotnet model API**](#project-model-api), each library provide different collections related to different kind of assemblies.
 
 - **Compilation assemblies**: Referenced for all dependencies when compiling a project.
 
-- **Default runtime assemblies**: Used for implementation at runtime, need to be loaded for all dependencies.
+- **Default runtime assemblies**: Used for implementation, need to be loaded for all dependencies.
 
-- **Compile only assemblies**: Most of the time a library has only one compilation assembly which is the same as the default runtime one. If not it's a compile only assembly because another one is used for implementation.
+- **Compile only assemblies**: Most of the time a library has only one compilation assembly which is the same as the default runtime one. Otherwise it's a compile only assembly and another one is used for implementation.
 
 - **Specific runtime assemblies**: Some libraries provides different implementations for different runtime environments.
 
 - **Native assemblies**: Some libraries need to provide native implementations for different runtimes environments. Because Modules are not intended to be published themselves, we don't care about native outputs.
 
-- **Resources assemblies**: Embedded resources in `{project}.resources.dll` files used by the resource manager.
+- **Resources assemblies**: `{project}.resources.dll` files used by the resource manager.
 
 - **Ambient assembly**: An assembly related to an [**ambient project**](#library-contexts) or an [**ambient package**](#library-contexts).
 
 ##Dotnet commands
 
-Here we describe how dotnet commands output binaries, this because we use the same structure to [**store at runtime**](#dynamic-storing) all [non ambient assemblies](#library-assemblies) of modules in probing folders, and then to retrieve them in different contexts for compilation and loading.
+Here we describe how dotnet commands output binaries, this because we use the same structure to [**store at runtime**](#dynamic-storing) all [non ambient assemblies](#library-assemblies) of modules dependencies in probing folders, and then to retrieve them in different contexts for compilation and loading.
 
 - **dotnet compile** (used by dotnet build): The project assembly (and its .pdb file) is outputed.
 
@@ -149,13 +149,13 @@ We use the [**project model API**](#project-model-api) to resolve a module and i
 
     If a dependency is an [**resolved package**](#library-contexts), we have to resolve ourselves the assembly path as above from the same probing folders. An unresolved package still provides relative paths from which we can extract the assembly name. Then, if the compile time assembly is a [compile only assembly](#library-assemblies), we also combine the `refs` sublfolder to the file name.
 
-    If a dependency is an [**unresolved package**](#library-contexts) which is indirectly referenced through a [**precompiled module**](#library-contexts), we first do the above. Then, if we can't resolve the assembly path, we try to find a (possible) parent precompiled module which contains the package assembly in its bin folder. Here, we use the dependency parents collection of libraries which also have parents ... So, we can lookup for all parent projects, then search in their bin folder directly.
+    If a dependency is an [**unresolved package**](#library-contexts) which is indirectly referenced through a [**precompiled module**](#library-contexts), we first do the above. Then, if we can't resolve the assembly path, we try to find a (possible) parent precompiled module which contains the package assembly in its bin folder. Here, we use the dependency parents collection which are libraries which also have parents ... So, we can lookup for all parent projects, then search in their bin folder directly.
 
     If a dependency is a [**precompiled project**](#library-contexts) with no source files but still the project json files, it is resolved but the [compilation assemblies](#library-assemblies) collection is empty. So, we need to resolve ourselves the assembly path from probing folders as above. But here, we don't search in the runtime directory because an ambient and resolved project is intended to have all source files. Then, if not resolved, we fallback to the regular output path of this precompiled project.
 
     If a dependency is an [**ambient and resolved project**](#library-contexts), the assembly path resolved by the project model could be added as it is to the compilation references. But, because e.g VS may output binaries in another folder (e.g artifacts), we first check if the assembly file exists, if not we fallback to the runtime directory (because it's an ambient assembly).
 
-    If a dependency is a [**non ambient and resolved Project**](#library-contexts) or is a [**resolved package**](#library-contexts), all the paths of its [compilation assemblies](#library-assemblies), as resolved by the Project Model, are added to the compilation references.
+    If a dependency is a [**non ambient and resolved project**](#library-contexts) or is a [**resolved package**](#library-contexts), all the paths of its [compilation assemblies](#library-assemblies), as resolved by the Project Model, are added to the compilation references.
 
 - **Parallel compilation**: Extensions loading is done in parallel, therefore module projects are also compiled in parallel. We use a dictionary of lock objects based on project names, this to prevent simultaneous compilations of the same project. We also use simple locks to prevent simultaneous writing of the same file.
 
@@ -167,7 +167,7 @@ We use the [**project model API**](#project-model-api) to resolve a module and i
 
     If a package provide different [specific runtime assemblies](#library-assemblies), each one provides a non empty rid (runtime identifier). Then we look up for the first rid compatible to the current runtime environment, and use it to resolve the right runtime assembly path.
 
-    If a module is a [**precompiled module**](#library-contexts) without project json files, we can't use the [**project model API**](#project-model-api) to resolve its dependencies. But all needed assemblies are intended to be in the module bin folder directly, and through the same structure which is used to store assemblies. So here, we simply parse the module bin folder where [default runtime assemblies](#library-assemblies) are intended to be at the top level, [specific runtime ones](#library-assemblies) under the `runtimes` subfolder, and [compile only ones](#library-assemblies) in the `refs` subfolder.
+    If a module is a [**precompiled module**](#library-contexts) without project json files, we can't use the [**project model API**](#project-model-api) to resolve its dependencies. But all needed assemblies are intended to be in the module bin folder directly, and through the same structure which is used to [**store assemblies**](#dynamic-storing). So here, we simply parse the module bin folder where [default runtime assemblies](#library-assemblies) are intended to be at the top level, [specific runtime ones](#library-assemblies) under the `runtimes` subfolder, and [compile only ones](#library-assemblies) in the `refs` subfolder.
 
 ##Dynamic storing
 
