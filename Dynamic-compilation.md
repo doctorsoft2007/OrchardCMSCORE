@@ -9,6 +9,7 @@
 - [Dynamic compilation](#dynamic-compilation)
 - [Dynamic loading](#dynamic-loading)
 - [Dynamic storing](#dynamic-storing)
+- [Views compilation](#views-compilation)
 - [Concerns](#concerns)
 - [Todo](#todo)
 
@@ -16,11 +17,11 @@
 
 To be a modular application, `Orchard.Web` doesn't specify, in its `project.json` file, any dependencies on Modules and Themes which are individual portable library projects. So, when you build `Orchard.Web`, Modules are not compiled. You can manually build them (e.g from VS tools) but when you launch `Orchard.Web`, we still need to load their assemblies.
 
-- [**Dynamic loading**](#dynamic-loading) is therefore necessary, we need to load non ambient assemblies of all modules dependencies at runtime. By doing this we can also pass to the razor view engine all needed metadata references for views compilation (not described here). We also need to [store at runtime](#dynamic-storing) these assemblies in some probing folders, this to retrieve them in different contexts.
+- [**Dynamic loading**](#dynamic-loading) is therefore necessary, we need to load [non ambient assemblies](#library-assemblies) of all modules dependencies at runtime. By doing this we can also pass to the razor view engine all needed metadata references for [views compilation](#views-compilation). We also need to [store at runtime](#dynamic-storing) these assemblies in some probing folders, this to retrieve them in different contexts.
 
-- [**Dynamic compilation**](#dynamic-compilation) is useful in a development context, you can update a module source file, a package or a core project and just hit F5, all dependent modules will be dynamically re-compiled. When a module has a dependency on a core project which is not part of `Orchard.Web`, if needed this non ambient core project is also re-compiled at runtime.
+- [**Dynamic compilation**](#dynamic-compilation) is useful in a development context, you can update a module source file, a package or a core project and just hit F5, all dependent modules will be dynamically re-compiled. When a module has a dependency on a core project which is not part of `Orchard.Web`, if needed this [non ambient project](#library-contexts) is also re-compiled at runtime.
 
-- In a published context, most of the time it will be better to use pre-compiled modules, but maybe useful in some scenarios to only have to push e.g an updated source file. Dynamic compilation and loading have been tested in different contexts where core projects are not there and / or there is no packages storage.
+- In a published context, most of the time it will be better to use [precompiled modules](#library-contexts), but maybe useful in some scenarios to only have to push e.g an updated source file. Dynamic compilation and loading have been tested in different contexts where core projects are not there and / or there is no packages storage.
 
 ###Library assemblies
 
@@ -34,7 +35,7 @@ A module project is a library which have dependencies on other libraries which a
 
 - **Specific runtime assemblies**: Some libraries provides different implementations for different runtime environments.
 
-- **Native assemblies**: Some libraries need to provide native implementations for different runtimes environments. Because Modules are not intended to be published themselves, we don't care about native outputs.
+- **Native assemblies**: Some libraries need to provide native implementations for different runtimes environments. Because modules are not intended to be published themselves, we don't care about native outputs.
 
 - **Resources assemblies**: `{project}.resources.dll` files used by the resource manager.
 
@@ -42,7 +43,7 @@ A module project is a library which have dependencies on other libraries which a
 
 ##Dotnet commands
 
-Here we describe how dotnet commands output binaries, this because we use the same structure to [**store at runtime**](#dynamic-storing) all [non ambient assemblies](#library-assemblies) of modules dependencies in probing folders, and then to retrieve them in different contexts for compilation and loading.
+Here we describe how dotnet commands output binaries, this because we use the same structure to [**store at runtime**](#dynamic-storing) all [non ambient assemblies](#library-assemblies) of modules dependencies in probing folders, and then retrieve them in different contexts for compilation and loading.
 
 - **dotnet compile** (used by dotnet build): The project assembly (and its .pdb file) is outputed.
 
@@ -103,11 +104,11 @@ Here we describe how dotnet commands output binaries, this because we use the sa
 
 ##Project model API
 
-Dotnet cli use this API which allow to create a project context and e.g retrieve all its dependencies (referenced project / package libraries). It is powerful because, when a library is marked as resolved, all the related compilation, runtime and native collections are populated with fully resolved assets (e.g with full paths). But here, the 2 `project.json` and `project.lock.json` files need to be there.
+Dotnet cli use this API which allows to create a project context and e.g retrieve all its dependencies (referenced project / package libraries). It is powerful because, when a library is marked as resolved, all the related compilation, runtime and native collections are populated with fully resolved assets (e.g with full paths). But here, the 2 `project.json` and `project.lock.json` files need to be there.
 
 ##Dependency model API
 
-When a project is built as an executable and with its compilation context, as needed by the main application to be executed and to compile razor views, a bigger assembly is generated and also a `{project}.deps.json` file. Then we can use the Dependency Model API to retrieve dependencies through this file. It is less powerful than the Project Model because assets are not fully resolved (e.g only relative paths). It doesn't rely on the 2 project json files but it needs the related `.deps.json` file.
+When a project is built as an executable and with its compilation context, as needed by the main application to be executed and to compile razor views, a bigger assembly is generated and also a `{project}.deps.json` file. Then we can use the Dependency Model API to retrieve dependencies through this file. It is less powerful than the project model because assets are not fully resolved (e.g only relative paths). It doesn't rely on the 2 project json files but it needs the related `.deps.json` file.
 
 ##Library contexts
 
@@ -115,11 +116,11 @@ We use the [**project model API**](#project-model-api) to resolve a module and i
 
 - **Resolved project**: The 2 project json files are there.
 
-- **Resolved package**: There is a package storage which contains this referenced package.
+- **Resolved package**: There is a packages storage which contains this referenced package.
 
 - **Unresolved project**: There is no project json files, e.g a core project not there in a published context.
 
-- **Unresolved package**: There is no package storage (e.g in production) or it doesn't contains this package.
+- **Unresolved package**: There is no packages storage (e.g in production) or it doesn't contains this package.
 
 - **Precompiled project**: A resolved project but without any source files, but with all binaries.
 
@@ -181,7 +182,7 @@ Configuration: We need to pass to the project model API the current configuratio
 
 - **Structured probing folders**: In each probing folder we store assemblies in a structured way, as [**dotnet publish**](#dotnet-commands) outputs its binaries in the runtime directory, [default runtime assemblies](#library-assemblies) are stored at the top level, [compile only assemblies](#library-assemblies) in the `refs` subfolder, [resources assemblies](#library-assemblies) in their related `{locale}` subfolders, and specific [runtime assemblies](#library-assemblies) under the `runtimes` subfolder.
 
-    The nuget package storage uses the same kind of patterns but not exactly, e.g [compile only assemblies](#library-assemblies) differ based on the targeted framework but not on the runtime environment. So, here they are all flattened in the `refs` subfolder.
+    The nuget packages storage uses the same kind of patterns but not exactly, e.g [compile only assemblies](#library-assemblies) differ based on the targeted framework but not on the runtime environment. So, here they are all flattened in the `refs` subfolder.
 
 - **Module binary folder**: When compiling a module project at runtime, its main assembly is naturally outputed in its binary folder. While loading it, we also store here all [**non ambient assemblies**](#library-assemblies) of all its dependencies.
 
@@ -211,11 +212,19 @@ Configuration: We need to pass to the project model API the current configuratio
 
         root/{locale}/{a}.resources.dll
 
-- **Resolving**: Before loading a module dependency assembly, we first try to resolve it from its regular location (e.g the package storage), then we fallback to the probing folders (module binary and shared probing folders) from where we try to find the most recent one.
+- **Resolving**: Before loading a module dependency assembly, we first try to resolve it from its regular location (e.g from the packages storage), then we fallback to the probing folders (module binary and shared probing folders) from where we try to find the most recent one.
 
 - **Storing**: After loading a module dependency assembly, without knowing from which location it has been resolved, the assembly is stored in probing folders (module binary and shared probing folders) where we first check that the assembly is not already there or has an older date.
 
 - **Updating**: The result of the above implementation is that we also update each probing folder with the last fully resolved assembly or with a more recent one found in another probing folder. This means e.g that an assembly in a module binary folder may be updated, through the shared probing folder, with a more recent one coming from another module.
+
+##Views compilation
+
+- When compiling a view, the razor view engine can reference all [ambient assemblies](#library-assemblies) which are part of the running application. But, modules are not [ambient projects](#library-contexts), so we first need to [load at runtime](#dynamic-loading) all the non ambient [runtime assemblies](#library-assemblies) of the module and its dependencies. Then we also have to pass all the related [compilation assemblies](#library-assemblies) as metadata references to the razor view engine.
+
+- The razor view engine allows us on startup to pass these additional compilation references through a configuration option.
+
+- [Dynamic loading](#dynamic-loading) uses, as roslyn, the same default `AssemblyLoadContext`, so we don't have any model / view data type mismatches.
 
 ##Concerns
 
