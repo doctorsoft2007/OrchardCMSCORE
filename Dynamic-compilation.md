@@ -132,7 +132,10 @@ We use the [**project model API**](#project-model-api) to resolve a module and i
 
 ##Dynamic compilation
 
-- **Roslyn compiler**: We use the Roslyn csharp compiler `csc.exe` by referencing the `Microsoft.Net.Compilers.netcore` package. Then, at runtime we copy it in an executable `csc.dll` and create automatically a `csc.runtimeconfig.json` runtime config file, as `dotnet core setup` do to generate its outputs. Then, as `dotnet compile` do, we can execute `csc.dll`.
+- **Roslyn compiler**: We use the Roslyn csharp compiler `csc.exe` by referencing the `Microsoft.Net.Compilers.netcore` package. Then, at runtime we copy it in an executable `csc.dll` and automatically create a `csc.runtimeconfig.json` runtime config file, as `dotnet core setup` do to generate its outputs. Then, as `dotnet compile` do, we can execute `csc.dll`.
+
+- **Native pdb writers**: According to the debug type option, the compiler outputs a `portable` or a `full` `.pdb` debug infos file. For the `full` option it needs native pdb writers, so we reference the `Microsoft.DiaSymReader.Native` package. When publishing the native assets are outputed to the runtime directory, and during development we do it at runtime from the package storage. We also create a fake `csc.deps.json` file only to reference these windows native pdb writers, this to allow the compiler to find them.
+
 
 - **Compilation**: The implementation is mainly inspired of the `dotnet compile` source code which uses the [**project model API**](#project-model-api) to resolve compilation options, output paths, source files, and all [compilation assemblies](#library-assemblies) of the project dependencies. Then, options and references are stored in a `dotnet-compile-csc.rsp` response file which is passed as an argument to the `csc.dll` compiler.
 
