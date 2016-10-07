@@ -15,7 +15,7 @@
 
 ##The needs
 
-To be a modular application, `Orchard.Web` doesn't specify, in its `project.json` file, any dependencies on Modules and Themes which are individual portable library projects. So, when you build `Orchard.Web`, Modules are not compiled. You can manually build them (e.g from VS tools) but when you launch `Orchard.Web`, we still need to load their assemblies.
+To be a modular application, `Orchard.Web` doesn't specify, in its `project.json` file, any dependencies on Modules and Themes which are individual portable library projects. So, when you build `Orchard.Web`, these modules are not compiled. You can manually build them (e.g from VS tools) but when you launch `Orchard.Web`, we still need to load their assemblies.
 
 - [**Dynamic loading**](#dynamic-loading) is therefore necessary, we need to load [non ambient assemblies](#library-assemblies) of all modules dependencies at runtime. By doing this we can also pass to the razor view engine all needed metadata references for [views compilation](#views-compilation). We also need to [store at runtime](#dynamic-storing) these assemblies in some probing folders, this to retrieve them in different contexts.
 
@@ -25,7 +25,7 @@ To be a modular application, `Orchard.Web` doesn't specify, in its `project.json
 
 ###Library assemblies
 
-A module project is a library which have dependencies on other libraries which are other projects and / or packages. When resolved through one of the [**dotnet model API**](#project-model-api), each library provide different collections related to different kind of assemblies.
+A module project is a library which have dependencies on other libraries which are other projects and / or packages. When resolved through one of the [**dotnet model API**](#project-model-api), each library provides different collections related to different kind of assemblies.
 
 - **Compilation assemblies**: Referenced for all dependencies when compiling a project.
 
@@ -134,21 +134,21 @@ We use the [**project model API**](#project-model-api) to resolve a module and i
 
 - **Roslyn compiler**: We use the Roslyn csharp compiler `csc.exe` by referencing the `Microsoft.Net.Compilers.netcore` package. Then, at runtime we copy it in an executable `csc.dll` and create automatically a `csc.runtimeconfig.json` runtime config file, as `dotnet core setup` do to generate its outputs. Then, as `dotnet compile` do, we can execute `csc.dll`.
 
-- **Compilation**: The implementation is mainly inspired of the `dotnet compile` source code which uses the [**project model API**](#project-model-api) to resolve compilation options, output paths, source files, and all [compilation assemblies](#library-assemblies) of the project dependencies. Then, options and references are stored in a dotnet-compile-csc.rsp response file which is passed as an argument to the csc.dll compiler.
+- **Compilation**: The implementation is mainly inspired of the `dotnet compile` source code which uses the [**project model API**](#project-model-api) to resolve compilation options, output paths, source files, and all [compilation assemblies](#library-assemblies) of the project dependencies. Then, options and references are stored in a `dotnet-compile-csc.rsp` response file which is passed as an argument to the `csc.dll` compiler.
 
-Configuration: We need to pass to the project model API the current configuration Debug or Release. Here we use the configuration under which the main project has been built. To do this, we use the [**dependency model API**](#dependency-model-api) on the main project (so we don't rely on its project.json files) to grab its compilation options and then retrieve the configuration.
+- **Configuration**: We need to pass to the [**project model API**](#project-model-api) the current configuration `Debug` or `Release`. Here we use the configuration under which the main project has been built. To do this, we use the [**dependency model API**](#dependency-model-api) on the main project (so without relying on its project.json files) to grab its compilation options and then retrieve the configuration.
 
 - **Conditions**: Only [**resolved projects**](#library-contexts) which are not ambient can be compiled, and only once per startup because we check if it is not already compiled (e.g as a dependency). Then we check all compilation IO to see if it needs to be compiled. Here we do a part of the dotnet build job.
 
 - **Compilation IO**: Compilation inputs are the 2 project json files, source files, eventually resources input files, and all [compilation assemblies](#library-assemblies) of the project dependencies. Compilation outputs are the generated project assembly (and its .pdb file), and eventually [resources output assemblies](#library-assemblies). Notice that a project compilation output can be a compilation input when referenced as a dependency in another project.
 
-- **Compilation IO checking**: We check the presence and the last write time of all resolved compilation IO files. A project need to be compiled if there is a missing IO or if an input is newer than the earliest output. But IO are not resolved in the same way, a source file resolution is already based on its presence. So, we can't only rely on this, e.g when a source file is moved, removed, or an old one is added. That's why, to see if anything else has changed, we use the previous compilation context stored in the `dotnet-compile-csc.rsp` response file.
+- **Compilation IO checking**: We check the presence and the last write time of all resolved compilation IO files. A project need to be compiled if there is a missing IO or if an input is newer than the earliest output. But IO are not all resolved in the same way, a source file resolution is already based on its presence. So, we can't only rely on this, e.g when a source file is moved, removed, or an old one is added. That's why, to see if anything else has changed, we use the previous compilation context stored in the `dotnet-compile-csc.rsp` response file.
 
 - **Building**: Before compiling a project itself we parse all its dependencies. If a dependency is a [**non ambient and resolved project**](#library-contexts) (here can be a core project), we recursively call dynamic compilation on it, and so on through the dependency graph, as `dotnet build` do.
 
     Then we resolve all [compilation assembly](#library-assemblies) paths from each dependency and add them to the references list needed for compilation. So, here we can do a complete compilation IO checking and, if needed, the project is compiled. If compilation succeeds and if there are resources input files, [resources assemblies](#library-assemblies) are also generated.
 
-- **Dependencies**: For each dependency which is a project or a package library, we don't need to parse their own dependencies. They already belong to those of the project being compiled and whose all the dependency graph has been resolved. So, most of the time, a dependency has, in its related collections, only one [compilation assembly](#library-assemblies) which is the same as the [default runtime assembly](#library-assemblies). So, here we don't always use the terms of compilation, runtime and collections.
+- **Dependencies**: For each dependency which is a project or a package library, we don't need to parse their own dependencies. They already belong to those of the project being compiled and whose all the dependency graph has been resolved. And, most of the time, a dependency has, in its related collections, only one [compilation assembly](#library-assemblies) which is the same as the [default runtime assembly](#library-assemblies). So, here when we only use the term of assembly, we are talking about this unique one.
 
     If a dependency is an [**unresolved project**](#library-contexts), we have to resolve ourselves the assembly path by searching in probing folders where the assembly may have been stored. First from the runtime directory where [ambient assemblies](#library-assemblies) are, then fallback to the project (being compiled) binary folder and the shared probing folder where we try to resolve the most recent assembly file. Here, we only need the file name which is the same as the library identity name.
 
@@ -158,7 +158,7 @@ Configuration: We need to pass to the project model API the current configuratio
 
     If a dependency is an [**unresolved package**](#library-contexts) which is indirectly referenced through a [**precompiled module**](#library-contexts), we first do the above. Then, if we can't resolve the assembly path, we try to find a (possible) parent precompiled module which contains the package assembly. Here, we use the dependency parents collection which are libraries which also have parents ... So, we can look up for all parent projects and search in their bin folder directly.
 
-    If a dependency is a [**precompiled project**](#library-contexts) with no source files but still the project json files, it is resolved but the [compilation assemblies](#library-assemblies) collection is empty. So, we need to resolve ourselves the assembly path from probing folders as above. But here, we don't search in the runtime directory because an ambient and resolved project is intended to have all source files. Then, if not resolved, we fallback to the regular output path of this precompiled project.
+    If a dependency is a [**precompiled project**](#library-contexts) with no source files but still the project json files, it is resolved but the [compilation assemblies](#library-assemblies) collection is empty. So, we need to resolve ourselves the assembly path from probing folders as above. But here, we don't search in the runtime directory because an [**ambient and resolved project**](#library-contexts) is intended to have all source files. Then, if not resolved, we fallback to the regular output path of this precompiled project.
 
     If a dependency is an [**ambient and resolved project**](#library-contexts), the assembly path resolved by the project model could be added as it is to the compilation references. But, because e.g VS may output binaries in another folder (e.g artifacts), we first check if the assembly file exists, if not we fallback to the runtime directory (because it's an ambient assembly).
 
@@ -168,9 +168,9 @@ Configuration: We need to pass to the project model API the current configuratio
 
 ##Dynamic loading
 
-- **Loading**: If a module is not already loaded, we parse all its dependencies and use the default `AssemblyLoadContext` to load in memory all the related [runtime assemblies](#library-assemblies) which are not ambient. We don't check for each individual assembly if it is already loaded this way, seems to be done internally, but here trying to load an [ambient assembly](#library-assemblies) would fail.
+- **Loading**: If a module is not already loaded, we parse all its dependencies and use the default `AssemblyLoadContext` to load in memory all the related [non ambient runtime assemblies](#library-assemblies). We don't check for each individual assembly if it is already loaded this way, seems to be done internally, but here trying to load an [ambient assembly](#library-assemblies) would fail.
 
-- **Dependencies**: If a module is a [**resolved project**](#library-contexts), assemblies paths of all its dependencies are resolved in the same way as when compiling. But here, we use [runtime assemblies](#library-assemblies) collections and, if a dependency is not resolved, we never fallback to the runtime directory because it only contains ambient assemblies.
+- **Dependencies**: If a module is a [**resolved project**](#library-contexts), assemblies paths of all its dependencies are resolved in the same way as when [**compiling**](#dynamic-compilation). But here, we use [runtime assemblies](#library-assemblies) collections and, if a dependency is not resolved, we never fallback to the runtime directory because it only contains ambient assemblies.
 
     If a package provide different [specific runtime assemblies](#library-assemblies), each one provides a non empty rid (runtime identifier). Then we look up for the first rid compatible to the current runtime environment, and use it to resolve the right runtime assembly path.
 
