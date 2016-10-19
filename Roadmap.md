@@ -59,12 +59,11 @@ The software is complete enough for external testing -- that is, by groups outsi
 #### Backlog
 - Layouts
 - Widgets
-- Scripting (JS)
+  - Scripting (JS)
 - Taxonomies
 - Media Library
-- Media processing
-- Output caching
-- Glimpse
+  - Media Processing
+- Projections
 
 ## RC
 
@@ -72,12 +71,15 @@ The software is almost ready for final release. No feature development or enhanc
 
 #### Backlog
 - Dynamic forms
-- Projections
 - Jobs queue
 - Workflows
 - Email
-- Redis
+- Azure
+  - Cache
+  - Media
 - Message bus
+- Output caching
+- Glimpse
 
 ## Tracking
 - Security
