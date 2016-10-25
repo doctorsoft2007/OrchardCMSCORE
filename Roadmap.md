@@ -44,10 +44,10 @@ Have more commonly used modules to start building websites.
 #### Fully or partially implemented
 - Autoroute
 - Tokens
+- Deployment (Import/Export)
 
 #### Backlog
 - Localization
-- Import/Export
 - Tenants management
 - Indexing/Search
 - Default theme
