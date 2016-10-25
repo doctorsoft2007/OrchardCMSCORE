@@ -50,6 +50,7 @@ Have more commonly used modules to start building websites.
 - Localization
 - Tenants management
 - Indexing/Search
+- Modules management
 - Default theme
 
 ## Beta
