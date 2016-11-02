@@ -45,12 +45,12 @@ Have more commonly used modules to start building websites.
 - Autoroute
 - Tokens
 - Deployment (Import/Export)
+- Tenants management
+- Modules management
 
 #### Backlog
 - Localization
-- Tenants management
 - Indexing/Search
-- Modules management
 - Default theme
 
 ## Beta
