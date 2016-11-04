@@ -34,7 +34,7 @@ Validate all the core components of Orchard work together to enable module devel
   - Guidelines
   - Tree navigation
 
-## Alpha (Current)
+## Alpha (Current - Dec 2016)
 
 The software is complete enough for internal testing. This is typically done by people other than the software engineers who wrote it, but still within the same organization or community that developed the software.
 
@@ -53,7 +53,7 @@ Have more commonly used modules to start building websites.
 - Indexing/Search
 - Default theme
 
-## Beta
+## Beta (March 2017)
 
 The software is complete enough for external testing -- that is, by groups outside the organization or community that developed the software. Beta software is usually feature complete, but may have known limitations or bugs. Betas are either closed (private) and limited to a specific set of users, or they can be open to the general public.
 
@@ -66,7 +66,7 @@ The software is complete enough for external testing -- that is, by groups outsi
   - Media Processing
 - Projections
 
-## RC
+## RC (June 2017)
 
 The software is almost ready for final release. No feature development or enhancement of the software is undertaken; tightly scoped bug fixes are the only code you're allowed to write in this phase, and even then only for the most heinous and debilitating of bugs. 
 
