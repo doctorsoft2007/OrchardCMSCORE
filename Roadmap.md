@@ -54,6 +54,7 @@ Have more commonly used modules to start building websites.
 - Settings
 - Homepage
 - Menu
+- Live preview
 
 ## Beta (April 2017)
 
