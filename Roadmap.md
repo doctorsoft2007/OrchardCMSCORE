@@ -47,11 +47,9 @@ Have more commonly used modules to start building websites.
 - Deployment (Import/Export)
 - Tenants management
 - Modules management
+- Indexing/Search (missing settings)
 
 #### Backlog
-- Localization
-- Indexing/Search
-- Default theme
 
 ## Beta (April 2017)
 
@@ -81,6 +79,9 @@ The software is almost ready for final release. No feature development or enhanc
 - Message bus
 - Output caching
 - Glimpse
+- Default theme
+- Localization
+- Accessibility
 
 ## Tracking
 - Security
