@@ -53,6 +53,7 @@ Have more commonly used modules to start building websites.
 
 - Settings
 - Homepage
+- Menu
 
 ## Beta (April 2017)
 
