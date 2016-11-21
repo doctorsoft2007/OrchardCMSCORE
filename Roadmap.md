@@ -48,11 +48,11 @@ Have more commonly used modules to start building websites.
 - Tenants management
 - Modules management
 - Indexing/Search (missing settings)
+- Homepage
 
 #### Backlog
 
 - Settings
-- Homepage
 - Menu
 - Live preview
 
