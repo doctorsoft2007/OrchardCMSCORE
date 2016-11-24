@@ -49,12 +49,12 @@ Have more commonly used modules to start building websites.
 - Modules management
 - Indexing/Search (missing settings)
 - Homepage
+- Settings
+- Live preview
 
 #### Backlog
 
-- Settings
 - Menu
-- Live preview
 
 ## Beta (April 2017)
 
