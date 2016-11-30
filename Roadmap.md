@@ -51,9 +51,11 @@ Have more commonly used modules to start building websites.
 - Homepage
 - Settings
 - Live preview
+- Body editors
 
 #### Backlog
 
+- Markdown editor
 - Menu
 
 ## Beta (April 2017)
