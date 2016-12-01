@@ -52,10 +52,10 @@ Have more commonly used modules to start building websites.
 - Settings
 - Live preview
 - Body editors
+- Markdown editor
 
 #### Backlog
 
-- Markdown editor
 - Menu
 
 ## Beta (April 2017)
