@@ -53,10 +53,12 @@ Have more commonly used modules to start building websites.
 - Live preview
 - Body editors
 - Markdown editor
+- Menu
 
 #### Backlog
 
-- Menu
+- RSS API
+- Collapsible admin menu
 
 ## Beta (April 2017)
 
