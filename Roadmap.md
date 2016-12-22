@@ -54,11 +54,11 @@ Have more commonly used modules to start building websites.
 - Body editors
 - Markdown editor
 - Menu
+- Collapsible admin menu
 
 #### Backlog
 
 - RSS API
-- Collapsible admin menu
 
 ## Beta (April 2017)
 
