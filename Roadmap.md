@@ -55,9 +55,6 @@ Have more commonly used modules to start building websites.
 - Markdown editor
 - Menu
 - Collapsible admin menu
-
-#### Backlog
-
 - RSS API
 
 ## Beta (April 2017)
