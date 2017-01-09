@@ -56,6 +56,7 @@ Have more commonly used modules to start building websites.
 - Menu
 - Collapsible admin menu
 - RSS API
+- XmlRpc/MetaWeblog API
 
 ## Beta (April 2017)
 
