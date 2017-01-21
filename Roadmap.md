@@ -57,15 +57,18 @@ Have more commonly used modules to start building websites.
 - Collapsible admin menu
 - RSS API
 - XmlRpc/MetaWeblog API
+- Scripting (JS)
 
 ## Beta (Current - April 2017)
 
 The software is complete enough for external testing -- that is, by groups outside the organization or community that developed the software. Beta software is usually feature complete, but may have known limitations or bugs. Betas are either closed (private) and limited to a specific set of users, or they can be open to the general public.
 
-#### Backlog
-- Layouts
+#### Fully or partially implemented
 - Widgets
-  - Scripting (JS)
+- Flows
+- Layers
+
+#### Backlog
 - Taxonomies
 - Media Library
   - Media Processing
