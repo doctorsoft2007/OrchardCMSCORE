@@ -91,7 +91,6 @@ The software is almost ready for final release. No feature development or enhanc
 - Glimpse
 - Default theme
 - Localization
-- Accessibility
 
 ## Tracking
 - Security
