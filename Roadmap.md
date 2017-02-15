@@ -95,6 +95,7 @@ The software is almost ready for final release. No feature development or enhanc
 
 ## Tracking
 - Security
+- Accessibility
 - Deployment and hosting (Azure, Linux, ...)
 - Performance
 
