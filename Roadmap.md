@@ -67,6 +67,7 @@ The software is complete enough for external testing -- that is, by groups outsi
 - Widgets
 - Flows
 - Layers
+- Module packaging
 
 #### Backlog
 - Taxonomies
