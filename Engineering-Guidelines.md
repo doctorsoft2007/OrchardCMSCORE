@@ -7,7 +7,6 @@ Engineering guidelines
 * [Product planning and issue tracking](#product-planning-and-issue-tracking)
 * [Tips and tricks](#tips-and-tricks)
 
-
 ## Basics
 
 ### Code reviews and checkins
@@ -16,16 +15,13 @@ To help ensure that only the highest quality code makes its way into the project
 
 The advantages are numerous: improving code quality, more visibility on changes and their potential impact, avoiding duplication of effort, and creating general awareness of progress being made in various areas.
 
-
 ## Source code management
 
 :grey_exclamation: The *structure* of the code that we write and the *tools* that we use to write the code.
 
-
 ### Repos
 
 To create a new repo in the https://github.com/orchard/ org, contact @jetski5822.
-
 
 ### Branch strategy
 
@@ -35,14 +31,13 @@ In general:
 
 This will change as the project evolves.
 
-
 ### Solution and project folder structure and naming
 
 Solution files go in the repo root.
 
 Solution names match repo names (e.g. Mvc.sln in the Mvc repo).
 
-Every project also needs a `project.json` and a matching `.xproj` file. This `project.json` is the source of truth for a project's dependencies and configuration options.
+Every project needs a `.csproj` file, which is the source of truth for a project's dependencies and configuration options.
 
 Solutions need to contain solution folders that match the physical folders (`src`, `test`, etc.).
 
@@ -52,19 +47,16 @@ For example, in the `Fruit` repo with the `Banana` and `Lychee` projects you wou
 /Fruit.sln
 /src
 /src/Microsoft.AspNet.Banana
-/src/Microsoft.AspNet.Banana/project.json
-/src/Microsoft.AspNet.Banana/Banana.kproj
+/src/Microsoft.AspNet.Banana/Banana.csproj
 /src/Microsoft.AspNet.Banana/Banana.cs
 /src/Microsoft.AspNet.Banana/Util/BananaUtil.cs
 /src/Microsoft.AspNet.Lychee
-/src/Microsoft.AspNet.Lychee/project.json
-/src/Microsoft.AspNet.Lychee/Lychee.kproj
+/src/Microsoft.AspNet.Lychee/Lychee.csproj
 /src/Microsoft.AspNet.Lychee/Lychee.cs
 /src/Microsoft.AspNet.Lychee/Util/LycheeUtil.cs
 /test
 /test/Microsoft.AspNet.Banana.Tests
-/test/Microsoft.AspNet.Banana.Tests/project.json
-/test/Microsoft.AspNet.Banana.Tests/BananaTest.kproj
+/test/Microsoft.AspNet.Banana.Tests/BananaTest.csproj
 /test/Microsoft.AspNet.Banana.Tests/BananaTest.cs
 /test/Microsoft.AspNet.Banana.Tests/Util/BananaUtilTest.cs
 ```
@@ -76,7 +68,6 @@ Note that after running the `build` command the system will generate the followi
 ```
 
 All these files are set to be ignored in the `.gitignore` file.
-
 
 ### Conditional compilation for Desktop/CoreCLR
 
@@ -122,11 +113,9 @@ To have a sample project reference a project in `src` you'll need a `global.json
 }
 ```
 
-
 ## Coding guidelines
 
 :grey_exclamation: The *content* of the code that we write.
-
 
 ### Coding style guidelines – general
 
@@ -136,7 +125,6 @@ The most general guideline is that we use all the VS default settings in terms o
 2. Use `_camelCase` for private fields
 3. Avoid `this.` unless absolutely necessary
 4. Always specify member visiblity, even if it's the default (i.e. `private string _foo;` not `string _foo;`)
-
 
 ### Usage of the var keyword
 
@@ -190,7 +178,7 @@ Our frameworks should work on CoreCLR, which supports multiple operating systems
 #### Line breaks
 Windows uses `\r\n`, OS X and Linux uses `\n`. When it is important, use `Environment.NewLine` instead of hard-coding the line break.
 
-Note: this may not always be possible or necessary. 
+Note: this may not always be possible or necessary.
 
 Be aware that these line-endings may cause problems in code when using `@""` text blocks with line breaks.
 
@@ -201,7 +189,7 @@ OS's use different variable names to represent similar settings. Code should con
 For example, when looking for the user's home directory, on Windows the variable is `USERPROFILE` but on most Linux systems it is `HOME`.
 
 ```c#
-var homeDir = Environment.GetEnvironmentVariable("USERPROFILE") 
+var homeDir = Environment.GetEnvironmentVariable("USERPROFILE")
                   ?? Environment.GetEnvironmentVariable("HOME");
 ```
 
@@ -240,7 +228,6 @@ public Task GetDataAsync(
 }
 ```
 
-
 ### Extension method patterns
 
 The general rule is: if a regular static method would suffice, avoid extension methods.
@@ -254,10 +241,12 @@ The namespace of the extension method class should generally be the namespace th
 The class name of an extension method container (also known as a "sponsor type") should generally follow the pattern of `<Feature>Extensions`, `<Target><Feature>Extensions`, or `<Feature><Target>Extensions`. For example:
 
 ```c#
-namespace Food {
+namespace Food
+{
     class Fruit { ... }
 }
-namespace Fruit.Eating {
+namespace Fruit.Eating
+{
     class FruitExtensions { public static void Eat(this Fruit fruit); }
   OR
     class FruitEatingExtensions { public static void Eat(this Fruit fruit); }
@@ -268,13 +257,11 @@ namespace Fruit.Eating {
 
 When writing extension methods for an interface the sponsor type name must not start with an `I`.
 
-
 ### Doc comments
 
 The person writing the code will write the doc comments. Public APIs only. No need for doc comments on non-public types.
 
 Note: Public means callable by a customer, so it includes protected APIs. However, some public APIs might still be "for internal use only" but need to be public for technical reasons. We will still have doc comments for these APIs but they will be documented as appropriate.
-
 
 ### Assertions
 
@@ -282,9 +269,7 @@ Use `Debug.Assert()` to assert a condition in the code. Do not use Code Contract
 
 Please note that assertions are only for our own internal debugging purposes. They do not end up in the released code, so to alert a developer of a condition use an exception.
 
-
 ### Unit tests and functional tests
-
 
 #### Assembly naming
 
@@ -324,9 +309,9 @@ GetData
 The contents of every unit test should be split into three distinct stages, optionally separated by these comments:
 
 ```c#
-// Arrange  
-// Act  
-// Assert 
+// Arrange
+// Act
+// Assert
 ```
 
 The crucial thing here is that the `Act` stage is exactly one statement. That one statement is nothing more than a call to the one method that you are trying to test. Keeping that one statement as simple as possible is also very important. For example, this is not ideal:
