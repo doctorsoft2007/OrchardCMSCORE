@@ -58,7 +58,7 @@ Have more commonly used modules to start building websites.
 - XmlRpc/MetaWeblog API
 - Scripting (JS)
 
-## Beta (Current - September 2017)
+## Beta (Current - October2017)
 
 The software is complete enough for external testing -- that is, by groups outside the organization or community that developed the software. Beta software is usually feature complete, but may have known limitations or bugs. Betas are either closed (private) and limited to a specific set of users, or they can be open to the general public.
 
@@ -75,8 +75,9 @@ The software is complete enough for external testing -- that is, by groups outsi
 - .NET Standard 2.0
 - View localization (PO Files, Pluralization)
 - The Agency theme
+- Docker images
 
-## Beta 2 (November 2017)
+## Beta 2 (December 2017)
 
 #### Backlog
 
@@ -86,7 +87,7 @@ The software is complete enough for external testing -- that is, by groups outsi
 - Output caching
 - Localization
 
-## RC (January 2018)
+## RC (February 2018)
 
 The software is almost ready for final release. No feature development or enhancement of the software is undertaken; tightly scoped bug fixes are the only code you're allowed to write in this phase, and even then only for the most heinous and debilitating of bugs. 
 
