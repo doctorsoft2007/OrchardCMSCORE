@@ -91,14 +91,14 @@ __Scheduled December 2017__
 - GraphQL
 - Azure Blog Storage
 
-## RC (February 2018)
+## RC
+__Scheduled February 2018__
 
 The software is almost ready for final release. No feature development or enhancement of the software is undertaken; tightly scoped bug fixes are the only code you're allowed to write in this phase, and even then only for the most heinous and debilitating of bugs. 
 
 #### Backlog
 - Dynamic forms
 - Jobs queue
-- Azure
 - Message bus
 
 ## Tracking
