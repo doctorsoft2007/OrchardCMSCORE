@@ -58,7 +58,8 @@ Have more commonly used modules to start building websites.
 - XmlRpc/MetaWeblog API
 - Scripting (JS)
 
-## Beta (Current - October2017)
+## Beta
+__Current Sprint__
 
 The software is complete enough for external testing -- that is, by groups outside the organization or community that developed the software. Beta software is usually feature complete, but may have known limitations or bugs. Betas are either closed (private) and limited to a specific set of users, or they can be open to the general public.
 
@@ -77,7 +78,8 @@ The software is complete enough for external testing -- that is, by groups outsi
 - The Agency theme
 - Docker images
 
-## Beta 2 (December 2017)
+## Beta 2 
+__Scheduled December 2017
 
 #### Backlog
 
@@ -86,6 +88,8 @@ The software is complete enough for external testing -- that is, by groups outsi
 - Email
 - Output caching
 - Localization
+- GraphQL
+- Azure Blog Storage
 
 ## RC (February 2018)
 
