@@ -33,7 +33,8 @@ Validate all the core components of Orchard work together to enable module devel
   - Guidelines
   - Tree navigation
 
-## Alpha (Dec 2016)
+## Alpha
+__December 2016__
 
 The software is complete enough for internal testing. This is typically done by people other than the software engineers who wrote it, but still within the same organization or community that developed the software.
 
@@ -59,7 +60,7 @@ Have more commonly used modules to start building websites.
 - Scripting (JS)
 
 ## Beta
-__Current Sprint__
+__November 2017__
 
 The software is complete enough for external testing -- that is, by groups outside the organization or community that developed the software. Beta software is usually feature complete, but may have known limitations or bugs. Betas are either closed (private) and limited to a specific set of users, or they can be open to the general public.
 
@@ -79,7 +80,7 @@ The software is complete enough for external testing -- that is, by groups outsi
 - Docker images
 
 ## Beta 2 
-__Scheduled December 2017__
+__Scheduled January 2017__
 
 #### Backlog
 
@@ -92,7 +93,7 @@ __Scheduled December 2017__
 - Azure Blog Storage
 
 ## RC
-__Scheduled February 2018__
+__Scheduled March 2018__
 
 The software is almost ready for final release. No feature development or enhancement of the software is undertaken; tightly scoped bug fixes are the only code you're allowed to write in this phase, and even then only for the most heinous and debilitating of bugs. 
 
