@@ -85,10 +85,14 @@ __Scheduled January 2017__
 #### Backlog
 
 - Taxonomies
-- Workflows
-- Email
 - Output caching
 - Localization
+- Updated recipes
+- Content filtering/navigation
+
+#### Fully or partially implemented
+- Workflows
+- Email
 - GraphQL
 - Azure Blog Storage
 
@@ -103,9 +107,10 @@ The software is almost ready for final release. No feature development or enhanc
 - Message bus
 
 ## Tracking
+- Documentation
 - Security
 - Accessibility
-- Deployment and hosting (Azure, Linux, ...)
+- Deployment and hosting
 - Performance
 
 Source: https://blog.codinghorror.com/alpha-beta-and-sometimes-gamma/
