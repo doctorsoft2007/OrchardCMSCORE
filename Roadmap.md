@@ -80,7 +80,7 @@ The software is complete enough for external testing -- that is, by groups outsi
 - Docker images
 
 ## Beta 2 
-__Scheduled January 2017__
+__Scheduled January 2018__
 
 #### Backlog
 
