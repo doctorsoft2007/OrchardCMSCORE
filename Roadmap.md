@@ -94,7 +94,7 @@ __Scheduled January 2018__
 - Workflows
 - Email
 - GraphQL
-- Azure Blog Storage
+- Azure Blob Storage
 
 ## RC
 __Scheduled March 2018__
