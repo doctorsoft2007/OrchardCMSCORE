@@ -80,24 +80,25 @@ The software is complete enough for external testing -- that is, by groups outsi
 - Docker images
 
 ## Beta 2 
-__Scheduled January 2018__
+__Scheduled March 2018__
 
 #### Backlog
 
 - Taxonomies
 - Output caching
 - Localization
-- Updated recipes
+- Updated default recipes and themes
 - Content filtering/navigation
+- CDN support
 
 #### Fully or partially implemented
 - Workflows
 - Email
-- GraphQL
+- GraphQL & JsonAPI
 - Azure Blob Storage
 
 ## RC
-__Scheduled March 2018__
+__Scheduled May 2018__
 
 The software is almost ready for final release. No feature development or enhancement of the software is undertaken; tightly scoped bug fixes are the only code you're allowed to write in this phase, and even then only for the most heinous and debilitating of bugs. 
 
