@@ -80,32 +80,34 @@ The software is complete enough for external testing -- that is, by groups outsi
 - Docker images
 
 ## Beta 2 
-__Scheduled March 2018__
+__Scheduled May 2018__
 
 #### Backlog
-
-- Taxonomies
-- Output caching
-- Localization
-- Updated default recipes and themes
-- Content filtering/navigation
-- CDN support
+- Background tasks management
+- Forms
+- .NET Core 2.1
 
 #### Fully or partially implemented
 - Workflows
 - Email
 - GraphQL & JsonAPI
 - Azure Blob Storage
+- Updated default recipes and themes
 
 ## RC
-__Scheduled May 2018__
+__Scheduled September 2018__
 
 The software is almost ready for final release. No feature development or enhancement of the software is undertaken; tightly scoped bug fixes are the only code you're allowed to write in this phase, and even then only for the most heinous and debilitating of bugs. 
 
 #### Backlog
-- Dynamic forms
+- Taxonomies
+- Output caching
+- Localization
+- Content filtering/navigation
+- CDN support
 - Jobs queue
 - Message bus
+- Indexing source (Lucene + SQL)
 
 ## Tracking
 - Documentation
