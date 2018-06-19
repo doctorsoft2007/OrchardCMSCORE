@@ -79,27 +79,39 @@ The software is complete enough for external testing -- that is, by groups outsi
 - The Agency theme
 - Docker images
 
-## Beta 2 
-__Scheduled May 2018__
-
-#### Backlog
-- Background tasks management
-- Forms
-- .NET Core 2.1
+## Beta 2
+__June 2018__
 
 #### Fully or partially implemented
+- .NET Core 2.1
+  - Precompiled Razor Views
+  - Razor Pages
 - Workflows
+- Forms
 - Email
-- GraphQL & JsonAPI
+- Password reset
+- Social logins
 - Azure Blob Storage
-- Updated default recipes and themes
+- Updated default recipes and themes (Bootstrap 4)
+- Data Protection
+- Fragment caching
+
+## Beta 3
+__Scheduled August 2018__
+
+#### Backlog
+
+#### Fully or partially implemented
+- Background tasks management
+- GraphQL & JsonAPI
 
 ## RC
-__Scheduled September 2018__
+__Scheduled October 2018__
 
 The software is almost ready for final release. No feature development or enhancement of the software is undertaken; tightly scoped bug fixes are the only code you're allowed to write in this phase, and even then only for the most heinous and debilitating of bugs. 
 
 #### Backlog
+- Entities API
 - Taxonomies
 - Output caching
 - Localization
