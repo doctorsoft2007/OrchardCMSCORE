@@ -97,22 +97,22 @@ __June 2018__
 - Fragment caching
 
 ## Beta 3
-__Scheduled August 2018__
+__Scheduled December 2018__
 
 #### Backlog
 
 #### Fully or partially implemented
 - Background tasks management
 - GraphQL & JsonAPI
+- Taxonomies
 
 ## RC
-__Scheduled October 2018__
+__Scheduled in 2019__
 
 The software is almost ready for final release. No feature development or enhancement of the software is undertaken; tightly scoped bug fixes are the only code you're allowed to write in this phase, and even then only for the most heinous and debilitating of bugs. 
 
 #### Backlog
 - Entities API
-- Taxonomies
 - Output caching
 - Localization
 - Content filtering/navigation
