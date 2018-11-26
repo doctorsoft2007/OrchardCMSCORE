@@ -103,8 +103,17 @@ __Scheduled December 2018__
 
 #### Fully or partially implemented
 - Background tasks management
-- GraphQL & JsonAPI
+- GraphQL
+- Decoupled CMS
 - Taxonomies
+- Custom navigation
+- Facebook authentication
+- ReCaptcha
+- Mini Profiler
+- Recipe migrations
+- File based Content Definition
+- The Coming Soon theme
+- Edit and Display modes
 
 ## RC
 __Scheduled in 2019__
@@ -112,14 +121,14 @@ __Scheduled in 2019__
 The software is almost ready for final release. No feature development or enhancement of the software is undertaken; tightly scoped bug fixes are the only code you're allowed to write in this phase, and even then only for the most heinous and debilitating of bugs. 
 
 #### Backlog
-- Entities API
-- Output caching
-- Localization
-- Content filtering/navigation
-- CDN support
+- Content Localization
+- RTL admin theme
+- Localization packages (Chinese, Spanish, Arabic, French are the most requested)
+- Distributed hosting
 - Jobs queue
-- Message bus
-- Indexing source (Lucene + SQL)
+- Output caching
+- Entities API
+- CDN support
 
 ## Tracking
 - Documentation
