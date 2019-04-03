@@ -97,9 +97,7 @@ __June 2018__
 - Fragment caching
 
 ## Beta 3
-__Scheduled December 2018__
-
-#### Backlog
+__April 2019__
 
 #### Fully or partially implemented
 - Background tasks management
@@ -107,7 +105,7 @@ __Scheduled December 2018__
 - Decoupled CMS
 - Taxonomies
 - Custom navigation
-- Facebook authentication
+- Microsoft Account, Google, Twitter, Facebook authentication
 - ReCaptcha
 - Mini Profiler
 - Recipe migrations
@@ -116,7 +114,7 @@ __Scheduled December 2018__
 - Edit and Display modes
 
 ## RC
-__Scheduled in 2019__
+__Q3 of 2019__
 
 The software is almost ready for final release. No feature development or enhancement of the software is undertaken; tightly scoped bug fixes are the only code you're allowed to write in this phase, and even then only for the most heinous and debilitating of bugs. 
 
@@ -124,11 +122,15 @@ The software is almost ready for final release. No feature development or enhanc
 - Content Localization
 - RTL admin theme
 - Localization packages (Chinese, Spanish, Arabic, French are the most requested)
+
+#### Bonus features
 - Distributed hosting
 - Jobs queue
 - Output caching
 - Entities API
 - CDN support
+- Sitemaps
+- SEO
 
 ## Tracking
 - Documentation
