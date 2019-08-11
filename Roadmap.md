@@ -114,23 +114,34 @@ __April 2019__
 - Edit and Display modes
 
 ## RC
-__Q3 of 2019__
+__Setpember 2019__
 
 The software is almost ready for final release. No feature development or enhancement of the software is undertaken; tightly scoped bug fixes are the only code you're allowed to write in this phase, and even then only for the most heinous and debilitating of bugs. 
 
-#### Backlog
+#### Done
 - Content Localization
 - RTL admin theme
-- Localization packages (Chinese, Spanish, Arabic, French are the most requested)
+- Resources CDN
+- GitHub authentication
+- Facebook applications
 
-#### Bonus features
+#### Backlog
+- Localization-neutral fields
+- Localization packages (Chinese, Spanish, Arabic, French are the most requested)
+- Media CDN support
+- Sitemaps
+- SEO
+- .NET Core 3.0
+
+## 1.0
+__October 2019__
+
+#### Future releases
 - Distributed hosting
 - Jobs queue
 - Output caching
 - Entities API
-- CDN support
-- Sitemaps
-- SEO
+- GraphQL mutations
 
 ## Tracking
 - Documentation
