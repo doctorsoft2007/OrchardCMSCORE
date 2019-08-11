@@ -136,7 +136,7 @@ The software is almost ready for final release. No feature development or enhanc
 ## 1.0
 __October 2019__
 
-#### Future releases
+## Future releases
 - Distributed hosting
 - Jobs queue
 - Output caching
