@@ -124,14 +124,14 @@ The software is almost ready for final release. No feature development or enhanc
 - Resources CDN
 - GitHub authentication
 - Facebook applications
+- Localization packages (Chinese, Spanish, Arabic, French are the most requested)
+- .NET Core 3.0
 
 #### Backlog
 - Localization-neutral fields
-- Localization packages (Chinese, Spanish, Arabic, French are the most requested)
 - Media CDN support
 - Sitemaps
 - SEO
-- .NET Core 3.0
 
 ## 1.0
 __October 2019__
