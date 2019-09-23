@@ -118,25 +118,26 @@ __September 2019__
 
 The software is almost ready for final release. No feature development or enhancement of the software is undertaken; tightly scoped bug fixes are the only code you're allowed to write in this phase, and even then only for the most heinous and debilitating of bugs. 
 
-#### Done
+#### Fully or partially implemented
 - Content Localization
 - RTL admin theme
 - Resources CDN
+- Media CDN support
 - GitHub authentication
 - Facebook applications
-- Localization packages (Chinese, Spanish, Arabic, French are the most requested)
 - .NET Core 3.0
-
-#### Backlog
-- Localization-neutral fields
-- Media CDN support
-- Sitemaps
-- SEO
+- Localization NuGet packages
+- Azure Media resizing
+- SQL fields indexing
+- Full Text aspect
 
 ## 1.0
 __October 2019__
 
 ## Future releases
+- Localization-neutral fields
+- Sitemaps
+- SEO
 - Distributed hosting
 - Jobs queue
 - Output caching
