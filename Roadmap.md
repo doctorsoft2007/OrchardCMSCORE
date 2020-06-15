@@ -113,7 +113,7 @@ __April 2019__
 - The Coming Soon theme
 - Edit and Display modes
 
-## RC
+## RC 1
 __September 2019__
 
 The software is almost ready for final release. No feature development or enhancement of the software is undertaken; tightly scoped bug fixes are the only code you're allowed to write in this phase, and even then only for the most heinous and debilitating of bugs. 
@@ -131,12 +131,29 @@ The software is almost ready for final release. No feature development or enhanc
 - SQL fields indexing
 - Full Text aspect
 
+## RC 2
+__June 2020__
+
+The software is almost ready for final release. No feature development or enhancement of the software is undertaken; tightly scoped bug fixes are the only code you're allowed to write in this phase, and even then only for the most heinous and debilitating of bugs. 
+
+#### Fully or partially implemented
+- Setup localization
+- Sitemaps
+- Tags (open taxonomies)
+- Routable taxonomies
+- Contained item routing
+- Tenant workflow tasks
+- Consolelog helper
+- Templated display text
+- Publish later part
+- Export to Json
+
 ## 1.0
-__October 2019__
+__September 2020__
 
 ## Future releases
 - Localization-neutral fields
-- Sitemaps
+- Dynamic strings localization
 - SEO
 - Distributed hosting
 - Jobs queue
