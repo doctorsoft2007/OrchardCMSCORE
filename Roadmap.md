@@ -160,6 +160,7 @@ __September 2020__
 - Output caching
 - Entities API
 - GraphQL mutations
+- Audit trail
 
 ## Tracking
 - Documentation
